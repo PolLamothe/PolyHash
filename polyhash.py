@@ -10,10 +10,14 @@ from polyparser import parse_challenge
 from polysolver import solve, score_solution, save_solution
 
 if __name__ == "__main__":
-    # On fournit ici un exemple permettant de passer un simple
-    # argument (le fichier du challenge) en paramètre. N'hésitez pas à
-    # compléter avec d'autres paramètres/options, en consultant la
-    # documentation du module argparse:
+    # La syntaxe exigée pour appeler le programme est
+    # polyhash.py chemin/fichier_entree.txt chemin/fichier_sortie.txt
+
+    # On fournit ici un exemple permettant de passer en paramètre le
+    # fichier du challenge et le fichier de sortie. N'hésitez pas si
+    # besoin à compléter avec d'autres paramètres/options - en
+    # conservant la possibilité de l'appel ci-dessus - en consultant
+    # la documentation du module argparse:
     # https://docs.python.org/3/library/argparse.html
 
     import argparse
