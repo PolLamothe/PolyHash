@@ -21,7 +21,7 @@ L'équipe
 
 L'objectif de cette manipulation est de provoquer des conflits d'édition, qui surviennent quand un même fichier est modifié au même endroit par plusieurs personnes, et de voir comment on les résout.
 
+- LAMOTHE Pol - pol.lamothe--trebaol@etu.univ-nantes.fr
 - Killian Guérin - killian.guerin1@etu.univ-nantes.fr
 - Yves Maël Tchouassi - yves-mael.tchouassi@etu.univ-nantes.fr
 - ARNAUD Kyllian - kyllian.arnaud@etu.univ-nantes.fr
-
