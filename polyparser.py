@@ -20,4 +20,4 @@ def parse_challenge(filename: str) -> object:
 
         # ...
 
-    return challenge
+    return None
