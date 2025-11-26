@@ -1,3 +1,3 @@
 __pycache__
-.pyc
-.ruff_cache
+*.pyc
+.ruff_cache/
