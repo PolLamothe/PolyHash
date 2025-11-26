@@ -14,6 +14,11 @@ class RawRue:
         self.name = name
         self.length = length
 
+@dataclass
+class RawVoiture:
+    def __init__(self,rue : list[str]):
+        self.rue = rue
+
 class Challenge:
     def __init__(self,
         duration : int,
@@ -21,7 +26,8 @@ class Challenge:
         streetsNumber : int,
         carsNumber : int,
         pointForFinishing : int,
-        streets : list[RawRue]):
+        streets : list[RawRue],
+        voitures : list[RawVoiture]) -> DataManager:
         self.duration = duration
         self.intersectionsNumber = intersectionsNumber
         self.streetsNumber = streetsNumber
@@ -31,7 +37,12 @@ class Challenge:
         dataManager = DataManager()
 
         for street in streets:
-            dataManager.addRue()
+            dataManager.addRue(street)
+
+        for voiture in voitures:
+            dataManager.addVoiture(voiture)
+        
+        return dataManager
 
 @dataclass
 class Rue:
@@ -59,6 +70,12 @@ class Intersection:
         for rue in rues:
             self.schedule[rue] = Schedule()
     
+@dataclass
+class Voiture:
+    
+    def __init__(self,rues : list[Rue]):
+        self.rues = rues
+
 class DataManager:
     
     def __init__(self):
@@ -82,3 +99,14 @@ class DataManager:
         source.rues.append(newRue)
         destination.rues.append(newRue)
         return newRue
+    
+    def addVoiture(self,voiture : RawVoiture) -> Voiture:
+        rue : list[Rue] = []
+        for rue1 in voiture.rue:
+            for rue2 in self.rues:
+                if rue2.rue == rue1:
+                    rue.append(rue2)
+                    break
+        if len(voiture.rue) != rue:
+            raise Exception("Erreur insertion Voiture : Rue Inexistante")
+        return Voiture(rue)
