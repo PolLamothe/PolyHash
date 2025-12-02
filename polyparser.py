@@ -4,8 +4,10 @@
 """Module de parsing des fichiers d'entrée pour la mise en oeuvre du projet Poly#.
 """
 import re
+from polystructure import Challenge, RawRue, RawVoiture
 
 def parse_challenge(filename: str) -> object:
+    
     """Lit un fichier de challenge et extrait les informations nécessaires.
 
     Vous pouvez choisir la structure de données structurées qui va
@@ -16,8 +18,17 @@ def parse_challenge(filename: str) -> object:
         line = f.readline().strip()
         # Strip everything after #
         line = re.sub(r'\s*#.*', '', line)
-        rows, columns, altitudes = [ int(v) for v in line.split() ]
+        # rows, columns, altitudes = [ int(v) for v in line.split() ]
+        simulation_time, number_intersections, number_streets, number_cars, score_per_car = [ int(v) for v in line.split() ]
+        challenge:Challenge = Challenge(simulation_time,number_intersections,number_streets,number_cars,score_per_car,[],[])
+        for cpt_rues in range(number_streets):
+            street = f.readline().strip().split()
+            rue:RawRue = RawRue(street[0], street[1], street[2],street[3])
+            challenge.streets.append(rue)
 
-        # ...
+        for cpt_cars in range(number_cars):
+            path = f.readline().strip().split()
+            voiture:RawVoiture = RawVoiture(path[1:])
+            challenge.voitures.append(voiture)
 
-    return None
+    return challenge
