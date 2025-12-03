@@ -4,21 +4,83 @@
 """Module contenant les data stuctures utilisé durant le projet
 """
 
+from __future__ import annotations
 from dataclasses import dataclass
 
 @dataclass
-class RawRue:
-    def __init__(self,sourceId : int, destinationId : int, name : str, length : int):
-        self.sourceid = sourceId
-        self.destinationId = destinationId
-        self.name = name
-        self.length = length
+class RawStreet:
+    sourceid : int
+    destinationId : int
+    name : str
+    length : int
 
 @dataclass
-class RawVoiture:
-    def __init__(self,rue : list[str]):
-        self.rue = rue
+class RawCar:
+    street : list[str]
 
+@dataclass
+class Street:
+    street : str
+    length : int
+    source : Intersection
+    destination : Intersection
+
+@dataclass
+class Schedule:
+    time : int = 1
+
+class Intersection:
+    
+    def __init__(self,id : int,streets : list[Street]):
+        self.id = id
+        self.streets = streets
+        self.schedule : dict[Street,Schedule] = {}
+        #schedule par défaut
+        for street in streets:
+            self.schedule[street] = Schedule()
+    
+@dataclass
+class Car:
+    
+    streets : list[Street]
+
+class DataManager:
+    
+    def __init__(self):
+        self.streets : list[Street] = []
+        self.intersections : dict[int,Intersection] = {}
+        self.cars : list[Car] = []
+    
+    def addstreet(self,street : RawStreet) -> Street:
+        source : Intersection = None
+        if street.sourceId in self.intersections:
+            source = self.intersections
+        else:
+            source = Intersection(street.sourceId,[])
+
+        destination : Intersection = None
+        if street.destinationId in self.intersections:
+            destination = self.intersections
+        else:
+            destination = Intersection(street.destinationId,[])
+
+        newstreet = street(street.name,street.length,source,destination)
+        source.streets.append(newstreet)
+        destination.streets.append(newstreet)
+        return newstreet
+    
+    def addCar(self,car : RawCar) -> Car:
+        street : list[Street] = []
+        for street1 in car.street:
+            for street2 in self.streets:
+                if street2.street == street1:
+                    street.append(street2)
+                    break
+        if len(car.street) != street:
+            raise Exception("Erreur insertion Car : street Inexistante")
+        self.cars.append(Car(street))
+        return Car(street)
+    
 class Challenge:
     def __init__(self,
         duration : int,
@@ -26,87 +88,18 @@ class Challenge:
         streetsNumber : int,
         carsNumber : int,
         pointForFinishing : int,
-        streets : list[RawRue],
-        voitures : list[RawVoiture]) -> DataManager:
+        streets : list[RawStreet],
+        car : list[RawCar]):
         self.duration = duration
         self.intersectionsNumber = intersectionsNumber
         self.streetsNumber = streetsNumber
         self.carsNumber = carsNumber
         self.pointForFinishing = pointForFinishing
 
-        dataManager = DataManager()
+        self.dataManager = DataManager()
 
         for street in streets:
-            dataManager.addRue(street)
+            self.dataManager.addstreet(street)
 
-        for voiture in voitures:
-            dataManager.addVoiture(voiture)
-        
-        return dataManager
-
-@dataclass
-class Rue:
-    
-    def __init__(self,rue : str,length : int,source : Intersection, destination : Intersection):
-        self.rue = rue
-        self.length = length
-        self.source = source
-        self.destination = destination
-
-@dataclass
-class Schedule:
-
-    def __init__(self, time : int = 1):
-        self.time = time
-
-@dataclass
-class Intersection:
-    
-    def __init__(self,id : int,rues : list[Rue]):
-        self.id = id
-        self.rues = rues
-        self.schedule : dict[Rue,Schedule] = {}
-        #schedule par défaut
-        for rue in rues:
-            self.schedule[rue] = Schedule()
-    
-@dataclass
-class Voiture:
-    
-    def __init__(self,rues : list[Rue]):
-        self.rues = rues
-
-class DataManager:
-    
-    def __init__(self):
-        self.rues : list[Rue] = []
-        self.intersections : dict[int,Intersection] = {}
-    
-    def addRue(self,rue : RawRue) -> Rue:
-        source : Intersection = None
-        if rue.sourceId in self.intersections:
-            source = self.intersections
-        else:
-            source = Intersection(rue.sourceId,[])
-
-        destination : Intersection = None
-        if rue.destinationId in self.intersections:
-            destination = self.intersections
-        else:
-            destination = Intersection(rue.destinationId,[])
-
-        newRue = Rue(rue.name,rue.length,source,destination)
-        source.rues.append(newRue)
-        destination.rues.append(newRue)
-        return newRue
-    
-    def addVoiture(self,voiture : RawVoiture) -> Voiture:
-        rue : list[Rue] = []
-        for rue1 in voiture.rue:
-            for rue2 in self.rues:
-                if rue2.rue == rue1:
-                    rue.append(rue2)
-                    break
-        if len(voiture.rue) != rue:
-            raise Exception("Erreur insertion Voiture : Rue Inexistante")
-        return Voiture(rue)
+        for car in car:
+            self.dataManager.addCar(car)

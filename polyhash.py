@@ -7,7 +7,7 @@
 # Vous pouvez structurer votre code en modules pour améliorer la
 # compréhension et faciliter le travail collaboratif
 from polyparser import parse_challenge
-from polysolver import solve, score_solution, save_solution
+#from polysolver import solve, score_solution, save_solution
 
 if __name__ == "__main__":
     # La syntaxe exigée pour appeler le programme est
@@ -31,6 +31,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     challenge = parse_challenge(args.challenge)
+    print(challenge.dataManager.streets)
+    exit(0)
     solution = solve(challenge)
     if args.output is not None:
         # Sauvegarder le fichier généré
