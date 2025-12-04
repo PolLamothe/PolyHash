@@ -32,61 +32,91 @@ class Schedule:
 class Intersection:
     
     def __init__(self,id : int):
-        self.id = id
-        self.streets = []
-        self.schedule : list[tuple[Street,Schedule]] = []
+        self.__id = id
+        self.__streets = []
+        self.__schedule : list[tuple[Street,Schedule]] = []
 
     def addStreet(self,street : Street):
-        if street.__class__ is not Street:
+        if not isinstance(street,Street):
             raise Exception(street," is not a Street")
-        self.streets.append(street)
-        self.schedule.append((street,Schedule()))
+        self.__streets.append(street)
+        self.__schedule.append((street,Schedule()))
+
+    def getId(self) -> int:
+        return self.__id
+    
+    def getStreets(self) -> list[Street]:
+        return self.__streets
+    
+    def getSchedule(self) -> list[tuple[Street,Schedule]]:
+        return self.__schedule
 
 class Car:
     carIdCount = 0
     def __init__(self,streets : list[Street]):
-        self.streets : list[Street] =  streets
+        self.__streets : list[Street] =  streets
         Car.carIdCount += 1
-        self.id :int = Car.carIdCount
+        self.__id :int = Car.carIdCount
+    
+    def getStreets(self) -> list[Street]:
+        return self.__streets
+    
+    def getId(self) -> int:
+        return self.__id
 
 class DataManager:
     
     def __init__(self):
-        self.streets : list[Street] = []
-        self.intersections : dict[int,Intersection] = {}
-        self.cars : list[Car] = []
+        self.__streets : list[Street] = []
+        self.__intersections : dict[int,Intersection] = {}
+        self.__cars : list[Car] = []
     
     def addstreet(self,street : RawStreet) -> Street:
+        if not isinstance(street,RawStreet):
+            raise Exception(street," is not a RawStreet")
+        
         source : Intersection = None
-        if street.sourceId in self.intersections:
-            source = self.intersections[street.sourceId]
+        if street.sourceId in self.__intersections:
+            source = self.__intersections[street.sourceId]
         else:
-            self.intersections[street.sourceId] = Intersection(street.sourceId)
-            source = self.intersections[street.sourceId]
+            self.__intersections[street.sourceId] = Intersection(street.sourceId)
+            source = self.__intersections[street.sourceId]
 
         destination : Intersection = None
-        if street.destinationId in self.intersections:
-            destination = self.intersections[street.destinationId]
+        if street.destinationId in self.__intersections:
+            destination = self.__intersections[street.destinationId]
         else:
-            self.intersections[street.destinationId] = Intersection(street.destinationId)
-            destination = self.intersections[street.destinationId]
+            self.__intersections[street.destinationId] = Intersection(street.destinationId)
+            destination = self.__intersections[street.destinationId]
 
         newstreet = Street(street.name,street.length,source,destination)
         destination.addStreet(newstreet)
-        self.streets.append(newstreet)
+        self.__streets.append(newstreet)
         return newstreet
     
     def addCar(self,car : RawCar) -> Car:
+        if not isinstance(car,RawCar):
+            raise Exception(car," is not a RawCar")
+
         street : list[Street] = []
         for street1 in car.street:
-            for street2 in self.streets:
+            for street2 in self.__streets:
                 if street2.street == street1:
                     street.append(street2)
                     break
         if len(car.street) != len(street):
             raise Exception("Erreur insertion Car : street Inexistante : ")
-        self.cars.append(Car(street))
+        self.__cars.append(Car(street))
         return Car(street)
+    
+    def getStreets(self) -> list[Street]:
+        return self.__streets
+    
+    def getCars(self) -> list[Car]:
+        return self.__cars
+    
+    def getIntersections(self) -> dict[int,Intersection]:
+        return self.__intersections
     
 class Challenge:
     """
@@ -100,33 +130,52 @@ class Challenge:
         pointForFinishing : int,
         streets : list[RawStreet],
         car : list[RawCar]):
-        self.duration = duration
-        self.intersectionsNumber = intersectionsNumber
-        self.streetsNumber = streetsNumber
-        self.carsNumber = carsNumber
-        self.pointForFinishing = pointForFinishing
 
-        self.dataManager = DataManager()
+        self.__duration = duration
+        self.__intersectionsNumber = intersectionsNumber
+        self.__streetsNumber = streetsNumber
+        self.__carsNumber = carsNumber
+        self.__pointForFinishing = pointForFinishing
+
+        self.__dataManager = DataManager()
 
         for street in streets:
-            self.dataManager.addstreet(street)
+            self.__dataManager.addstreet(street)
 
         for car in car:
-            self.dataManager.addCar(car)
+            self.__dataManager.addCar(car)
 
-        self.solver = None
+        self.__solver = None
     
     def setSolver(self,solver : Solver):
-        if self.solver is not None:
+        if self.__solver is not None:
             raise Exception("Solver already set")
         if solver is None:
             raise Exception("Solver is None")
-        self.solver = solver
+        self.__solver = solver
     
     def getSolver(self) -> Solver:
-        if self.solver is None:
+        if self.__solver is None:
             raise Exception("Solver not set")
-        return self.solver
+        return self.__solver
+    
+    def getDuration(self) -> int:
+        return self.__duration
+
+    def getIntersectionsNumber(self) -> int:
+        return self.__intersectionsNumber
+    
+    def getStreetsNumber(self) -> int:
+        return self.__streetsNumber
+    
+    def getCarsNumber(self) -> int:
+        return self.__carsNumber
+    
+    def getPointForFinishing(self) -> int:
+        return self.__pointForFinishing
+    
+    def getDataManager(self) -> DataManager:
+        return self.__dataManager
     
 class Solver:
     def solve(challenge : Challenge):
