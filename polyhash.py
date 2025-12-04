@@ -37,8 +37,8 @@ if __name__ == "__main__":
 
     challenge = parse_challenge(args.challenge)
     challenge.setSolver(AvailableSolutions.getFromName(args.solution))
-    solution = challenge.getSolver().solve(challenge)
+    solution = challenge.solve()
     if args.output is not None:
         # Sauvegarder le fichier généré
         print(f"Solution saved in {args.output}")
-    print(f"Score: {scorer(challenge)}")
+    print(f"Score: {scorer(challenge,solution)}")

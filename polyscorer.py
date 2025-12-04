@@ -131,8 +131,8 @@ class DataManagerSolver:
         self.streets = []
         self.intersections = []
     
-    def loadDataFromChallenge(self, challenge: Challenge):
-        for intersection in challenge.getDataManager().getIntersections().values():
+    def loadDataFromChallenge(self, challenge: Challenge, intersections : list[Intersection]):
+        for intersection in intersections:
             self.addIntersection(intersection)
         for street in challenge.getDataManager().getStreets():
             self.addStreet(street)
@@ -172,9 +172,9 @@ def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
     for intersection in dataManager.intersections:
         intersection.decrementTimeLeft()
 
-def scorer(challenge: Challenge):
+def scorer(challenge: Challenge,intersections : list[Intersection]):
     dataManager = DataManagerSolver()
-    dataManager.loadDataFromChallenge(challenge)
+    dataManager.loadDataFromChallenge(challenge,intersections)
     # for i in range(1, challenge.duration + 1):
     #     tour(challenge, dataManager, i)
     return dataManager, dataManager.score

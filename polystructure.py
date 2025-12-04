@@ -33,7 +33,7 @@ class Intersection:
     
     def __init__(self,id : int):
         self.__id = id
-        self.__streets = []
+        self.__streets : list[Street] = []
         self.__schedule : list[tuple[Street,Schedule]] = []
 
     def addStreet(self,street : Street):
@@ -148,8 +148,6 @@ class Challenge:
         self.__solver = None
     
     def setSolver(self,solver : Solver):
-        if self.__solver is not None:
-            raise Exception("Solver already set")
         if solver is None:
             raise Exception("Solver is None")
         self.__solver = solver
@@ -176,6 +174,11 @@ class Challenge:
     
     def getDataManager(self) -> DataManager:
         return self.__dataManager
+    
+    def solve(self) -> list[Intersection]:
+        if self.__solver is None:
+            raise Exception("Solver not set")
+        return self.__solver.solve(self)
     
 class Solver:
     def solve(challenge : Challenge):
