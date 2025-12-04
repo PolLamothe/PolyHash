@@ -12,12 +12,12 @@ class IntersectionSolver:
     def __init__(self, intersection: Intersection, dataManager: DataManagerSolver):
         self.dataManager = dataManager
         self.intersection = intersection
-        self.currentTurn = 0 if len(intersection.schedule) else -1
-        self.timeLeft = intersection.schedule[0][1].time
+        self.currentTurn = 0 if len(intersection.getSchedule()) else -1
+        self.timeLeft = intersection.getSchedule()[0][1].time
         self.streets = []
 
     def initStreets(self):
-        for street in self.intersection.streets:
+        for street in self.intersection.getStreets():
             self.streets.append(self.dataManager.getStreetFromName(street.street))
 
     def decrementTimeLeft(self):
@@ -45,7 +45,7 @@ class StreetSolver:
         self.dataManager = dataManager
         self.street = street
         self.carsWaitingAtLight = []
-        self.intersectionAtEnd = dataManager.getIntersectionFromId(street.destination.id)
+        self.intersectionAtEnd = dataManager.getIntersectionFromId(street.destination.getId())
     
     def isLightGreen(self):
         return self.intersectionAtEnd.isLightGreenForStreet(self)
@@ -75,7 +75,7 @@ class CarSolver:
         self.car = car
         self.isArrived = False
         self.currentStreetIndex = 0
-        self.currentStreet = dataManager.getStreetFromName(car.streets[0].street)
+        self.currentStreet = dataManager.getStreetFromName(car.getStreets()[0].street)
         self.timeLeftInStreet = 0
         self.timeLost = 0
     
@@ -132,13 +132,13 @@ class DataManagerSolver:
         self.intersections = []
     
     def loadDataFromChallenge(self, challenge: Challenge):
-        for intersection in challenge.dataManager.intersections.values():
+        for intersection in challenge.getDataManager().getIntersections().values():
             self.addIntersection(intersection)
-        for street in challenge.dataManager.streets:
+        for street in challenge.getDataManager().getStreets():
             self.addStreet(street)
         for intersection in self.intersections:
             intersection.initStreets()
-        for car in challenge.dataManager.cars:
+        for car in challenge.getDataManager().getCars():
             self.addCar(car)
 
     def addCar(self, car: Car):
@@ -154,10 +154,10 @@ class DataManagerSolver:
         return next((s for s in self.streets if s.street.street == name), None)
     
     def getIntersectionFromId(self, id: int) -> IntersectionSolver | None:
-        return next((i for i in self.intersections if i.intersection.id == id), None)
+        return next((i for i in self.intersections if i.intersection.getId() == id), None)
 
 def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
-    if challenge.duration == t:
+    if challenge.getDuration() == t:
         return challenge
 
     for car in dataManager.cars:
@@ -167,7 +167,7 @@ def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
         if isAtEnd and car.currentStreet.getWaitingCarPosition(car) == 0 and car.currentStreet.isLightGreen():
             hasFinished = car.changeStreet()
             if hasFinished:
-                dataManager.score += challenge.pointForFinishing + (challenge.duration - t)
+                dataManager.score += challenge.getPointForFinishing() + (challenge.getDuration() - t)
 
     for intersection in dataManager.intersections:
         intersection.decrementTimeLeft()
