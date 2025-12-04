@@ -14,6 +14,8 @@ class IntersectionSolver:
         self.intersection = intersection
         self.currentTurn = 0 if len(intersection.getSchedule()) else -1
         self.timeLeft = intersection.getSchedule()[0][1].time
+        self.currentTurn = 0 if len(intersection.getSchedule()) else -1
+        self.timeLeft = intersection.getSchedule()[0][1].time
         self.streets = []
         print(f" I{intersection.getId()} instanciée")
 
@@ -96,6 +98,7 @@ class CarSolver:
         self.car = car
         self.isArrived = False
         self.currentStreetIndex = 0
+        self.currentStreet = dataManager.getStreetFromName(car.getStreets()[0].street)
         self.currentStreet = dataManager.getStreetFromName(car.getStreets()[0].street)
         self.timeLeftInStreet = 0
         self.timeLost = 0
