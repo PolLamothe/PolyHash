@@ -25,11 +25,11 @@ def parse_challenge(filename: str) -> Challenge:
         for cpt_rues in range(number_streets):
             street = f.readline().strip().split()
             rue:RawStreet = RawStreet(street[0], street[1], street[2],street[3])
-            challenge.dataManager.addstreet(rue)
+            challenge.getDataManager().addstreet(rue)
 
         for cpt_cars in range(number_cars):
             path = f.readline().strip().split()
             voiture:RawCar = RawCar(path[1:])
-            challenge.dataManager.addCar(voiture)
+            challenge.getDataManager().addCar(voiture)
 
     return challenge

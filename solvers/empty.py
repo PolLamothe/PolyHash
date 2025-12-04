@@ -4,14 +4,9 @@
 """solver vide pour tester la structure
 """
 
-from polystructure import Challenge, Solver
+from polystructure import Challenge, Solver, Intersection
 
 class EmptySolver(Solver):
-    def solve(challenge : Challenge):
-        return None
-
-    def score_solution(solution):
-        return None
-    
-    def save_solution(filename, solution):
-        return None
+    def solve(challenge : Challenge)->list[Intersection]:
+        intersections = challenge.getDataManager().getIntersections()
+        return [intersection for intersection in intersections.values()]
