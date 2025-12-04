@@ -7,7 +7,8 @@
 # Vous pouvez structurer votre code en modules pour améliorer la
 # compréhension et faciliter le travail collaboratif
 from polyparser import parse_challenge
-from polysolver import solve, score_solution, save_solution
+from polystructure import Challenge,Solver
+from polysolver import AvailableSolutions
 
 if __name__ == "__main__":
     # La syntaxe exigée pour appeler le programme est
@@ -28,12 +29,16 @@ if __name__ == "__main__":
     parser.add_argument('output', type=str, default=None,
                         help='output filename',
                         metavar="sortie.txt")
+    parser.add_argument('solution', type=str, default="empty",
+                        help='solution program')
+
     args = parser.parse_args()
 
     challenge = parse_challenge(args.challenge)
-    solution = solve(challenge)
+    challenge.setSolver(AvailableSolutions.getFromName(args.solution))
+    solution = challenge.getSolver().solve(challenge)
     if args.output is not None:
         # Sauvegarder le fichier généré
-        save_solution(args.output, solution)
+        challenge.getSolver().save_solution(args.output, solution)
         print(f"Solution saved in {args.output}")
-    print(f"Score: {score_solution(solution)}")
+    print(f"Score: {challenge.getSolver().score_solution(solution)}")

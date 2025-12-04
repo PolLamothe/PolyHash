@@ -3,8 +3,15 @@
 
 """Module de résolution du projet Poly#.
 """
+from enum import Enum
+from solvers.empty import EmptySolver
+from polystructure import Solver
 
-def solve(challenge):
-    """Résout un challenge donné.
-    """
-    return None
+class AvailableSolutions(Enum):
+    EMPTY : Solver = EmptySolver
+
+    def getFromName(name : str) -> Solver:
+        for solution in AvailableSolutions:
+            if solution.name.lower() == name.lower():
+                return solution.value
+        raise ValueError("Solution "+name+" not found")

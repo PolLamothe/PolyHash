@@ -107,3 +107,26 @@ class Challenge:
 
         for car in car:
             self.dataManager.addCar(car)
+
+        self.solver = None
+    
+    def setSolver(self,solver : Solver):
+        if self.solver is not None:
+            raise Exception("Solver already set")
+        if solver is None:
+            raise Exception("Solver is None")
+        self.solver = solver
+    
+    def getSolver(self) -> Solver:
+        if self.solver is None:
+            raise Exception("Solver not set")
+        return self.solver
+    
+class Solver:
+    def solve(challenge : Challenge):
+        raise NotImplementedError()
+
+    def score_solution(solution):
+        raise NotImplementedError()
+    def save_solution(filename, solution):
+        raise NotImplementedError()
