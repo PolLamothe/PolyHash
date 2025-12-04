@@ -180,8 +180,3 @@ class Challenge:
 class Solver:
     def solve(challenge : Challenge):
         raise NotImplementedError()
-
-    def score_solution(solution):
-        raise NotImplementedError()
-    def save_solution(filename, solution):
-        raise NotImplementedError()
