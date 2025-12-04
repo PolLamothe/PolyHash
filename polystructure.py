@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 @dataclass
 class RawStreet:
-    sourceid : int
+    sourceId : int
     destinationId : int
     name : str
     length : int
@@ -34,15 +34,18 @@ class Intersection:
     def __init__(self,id : int,streets : list[Street]):
         self.id = id
         self.streets = streets
-        self.schedule : dict[Street,Schedule] = {}
+        self.schedule : list[tuple[Street,Schedule]] = []
         #schedule par défaut
         for street in streets:
-            self.schedule[street] = Schedule()
-    
-@dataclass
+            self.schedule.append((street,Schedule()))
+
+
 class Car:
-    
-    streets : list[Street]
+    carIdCount = 0
+    def __init__(self,streets : list[Street]):
+        self.streets : list[Street] =  streets
+        Car.carIdCount += 1
+        self.id :int = Car.carIdCount
 
 class DataManager:
     
@@ -64,7 +67,8 @@ class DataManager:
         else:
             destination = Intersection(street.destinationId,[])
 
-        newstreet = street(street.name,street.length,source,destination)
+        newstreet = Street(street.name,street.length,source,destination)
+        self.streets.append(newstreet)
         source.streets.append(newstreet)
         destination.streets.append(newstreet)
         return newstreet
@@ -76,8 +80,8 @@ class DataManager:
                 if street2.street == street1:
                     street.append(street2)
                     break
-        if len(car.street) != street:
-            raise Exception("Erreur insertion Car : street Inexistante")
+        if len(car.street) != len(street):
+            raise Exception("Erreur insertion Car : street Inexistante : ")
         self.cars.append(Car(street))
         return Car(street)
     
