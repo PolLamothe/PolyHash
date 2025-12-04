@@ -31,14 +31,16 @@ class Schedule:
 
 class Intersection:
     
-    def __init__(self,id : int,streets : list[Street]):
+    def __init__(self,id : int):
         self.id = id
-        self.streets = streets
+        self.streets = []
         self.schedule : list[tuple[Street,Schedule]] = []
-        #schedule par défaut
-        for street in streets:
-            self.schedule.append((street,Schedule()))
 
+    def addStreet(self,street : Street):
+        if street.__class__ is not Street:
+            raise Exception(street," is not a Street")
+        self.streets.append(street)
+        self.schedule.append((street,Schedule()))
 
 class Car:
     carIdCount = 0
@@ -57,20 +59,21 @@ class DataManager:
     def addstreet(self,street : RawStreet) -> Street:
         source : Intersection = None
         if street.sourceId in self.intersections:
-            source = self.intersections
+            source = self.intersections[street.sourceId]
         else:
-            source = Intersection(street.sourceId,[])
+            self.intersections[street.sourceId] = Intersection(street.sourceId)
+            source = self.intersections[street.sourceId]
 
         destination : Intersection = None
         if street.destinationId in self.intersections:
-            destination = self.intersections
+            destination = self.intersections[street.destinationId]
         else:
-            destination = Intersection(street.destinationId,[])
+            self.intersections[street.destinationId] = Intersection(street.destinationId)
+            destination = self.intersections[street.destinationId]
 
         newstreet = Street(street.name,street.length,source,destination)
+        destination.addStreet(newstreet)
         self.streets.append(newstreet)
-        source.streets.append(newstreet)
-        destination.streets.append(newstreet)
         return newstreet
     
     def addCar(self,car : RawCar) -> Car:
@@ -86,6 +89,9 @@ class DataManager:
         return Car(street)
     
 class Challenge:
+    """
+    Classe formalisant toutes les infos du challenge à partir des données extraite du fichier
+    """
     def __init__(self,
         duration : int,
         intersectionsNumber : int,
