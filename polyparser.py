@@ -6,7 +6,7 @@
 import re
 from polystructure import Challenge, RawStreet, RawCar
 
-def parse_challenge(filename: str) -> object:
+def parse_challenge(filename: str) -> Challenge:
     
     """Lit un fichier de challenge et extrait les informations nécessaires.
 
@@ -25,11 +25,11 @@ def parse_challenge(filename: str) -> object:
         for cpt_rues in range(number_streets):
             street = f.readline().strip().split()
             rue:RawStreet = RawStreet(street[0], street[1], street[2],street[3])
-            challenge.dataManager.streets.append(rue)
+            challenge.dataManager.addstreet(rue)
 
         for cpt_cars in range(number_cars):
             path = f.readline().strip().split()
             voiture:RawCar = RawCar(path[1:])
-            challenge.dataManager.cars.append(voiture)
+            challenge.dataManager.addCar(voiture)
 
     return challenge
