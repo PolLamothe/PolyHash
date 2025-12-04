@@ -15,25 +15,37 @@ class IntersectionSolver:
         self.currentTurn = 0 if len(intersection.schedule) else -1
         self.timeLeft = intersection.schedule[0][1].time
         self.streets = []
+        print(f" I{intersection.id} instanciée")
 
     def initStreets(self):
-        for street in self.intersection.streets:
+        for street, _ in self.intersection.schedule:
             self.streets.append(self.dataManager.getStreetFromName(street.street))
 
     def decrementTimeLeft(self):
         if self.currentTurn == -1:
+            print(f"    I{self.intersection.id} /!\\ : Toujours rouge")
             return
         if self.timeLeft - 1 == 0:
             self.currentTurn = (self.currentTurn + 1) % len(self.intersection.schedule)
-            self.timeLeft = self.schedule[self.currentTurn][1].time
+            self.timeLeft = self.intersection.schedule[self.currentTurn][1].time
+            print(f"    I{self.intersection.id} : {self.streets[self.currentTurn].street.street} est vert")
+        else:
+            self.timeLeft -= 1
+    
+    def getGreenStreet(self) -> StreetSolver:
+        return self.streets[self.currentTurn]
     
     def isLightGreenForStreet(self, street: StreetSolver):
         """
         Renvoie vrai si le feu est vert pour la rue donnée en paramètre, et faux si la rue n'est pas liée à l'intersection ou si le feu est rouge.
         """
-        if street not in self.streets:
-            return False
-        return self.intersection.schedule[self.currentTurn][0].street == street.street      
+        return self.getGreenStreet().street.street == street.street.street
+    
+    def __str__(self):
+        return f"(IntersectionSolver I{self.intersection.id})"
+    
+    def __repr__(self):
+        return self.__str__()
 
 class StreetSolver:
     dataManager: DataManagerSolver
@@ -46,6 +58,7 @@ class StreetSolver:
         self.street = street
         self.carsWaitingAtLight = []
         self.intersectionAtEnd = dataManager.getIntersectionFromId(street.destination.id)
+        print(f" R{street.street} instanciée")
     
     def isLightGreen(self):
         return self.intersectionAtEnd.isLightGreenForStreet(self)
@@ -56,10 +69,18 @@ class StreetSolver:
     def getWaitingCarPosition(self, car: CarSolver):
         return next((index for index, item in enumerate(self.carsWaitingAtLight) if car.car.id == item.car.id), -1)
     
-    def popWaitingCar(self):
+    def popWaitingCar(self) -> CarSolver | None:
         if self.intersectionAtEnd is None:
             raise AttributeError("No intersection at the end.")
+        if not self.carsWaitingAtLight:
+            return None
         return self.carsWaitingAtLight.pop(0)
+
+    def __str__(self):
+        return f"(StreetSolver R{self.street.streets})"
+    
+    def __repr__(self):
+        return self.__str__()
 
 class CarSolver:
     dataManager: DataManagerSolver
@@ -78,39 +99,46 @@ class CarSolver:
         self.currentStreet = dataManager.getStreetFromName(car.streets[0].street)
         self.timeLeftInStreet = 0
         self.timeLost = 0
+        self.currentStreet.pushWaitingCar(self)
+        print(f" V{car.id} instanciée")
     
     def changeStreet(self):
         """
         La voiture passe à la rue suivante.
-        Renvoie vrai si la voiture a terminé son trajet à ce tour, faux sinon
         """
         if self.isArrived:
-            return False
-        if self.currentStreetIndex + 1 == len(self.car.streets):
-            self.isArrived = True
-            return True
+            return
+        oldStreet = self.currentStreet.street.street
         self.currentStreetIndex += 1
         self.currentStreet = self.dataManager.getStreetFromName(self.car.streets[self.currentStreetIndex].street)
-        self.timeLeftInStreet = self.currentStreet.street.length
-        return False
+        self.timeLeftInStreet = int(self.currentStreet.street.length)
+        print(f"    V{self.car.id} : {oldStreet} -> {self.currentStreet.street.street}")
+        return
     
     def decrementTimeLeft(self):
         """
         Décrémente le temps restant à parcourir la rue actuelle de la voiture.
-        Renvoie vrai si la voiture attend au feu, faux si elle a terminé ou si elle est dans une rue.
         """
         if self.isArrived:
-            return False
-        res = False
+            return
         if self.timeLeftInStreet - 1 == 0:
+            if self.currentStreetIndex + 1 == len(self.car.streets):
+                self.currentStreetIndex += 1
+                self.isArrived = True
+                self.dataManager.addScore()
+                print(f"   V{self.car.id} : Arrivée à destination")
+                return
             self.currentStreet.pushWaitingCar(self)
-            res = True
         if self.timeLeftInStreet > 0:
             self.timeLeftInStreet -= 1
-            return res
         else:
-            self.timeLeftInStreet += 1
-            return True
+            self.timeLost += 1
+    
+    def __str__(self):
+        return f"(CarSolver V{self.car.id})"
+    
+    def __repr__(self):
+        return self.__str__()
 
 class DataManagerSolver:
     """
@@ -120,18 +148,20 @@ class DataManagerSolver:
     - Rues au bout des intersections
     - Voitures
     """
+    t: int
     score: int
+    challenge: Challenge
     cars: list[CarSolver]
     streets: list[StreetSolver]
     intersections: list[IntersectionSolver]
 
-    def __init__(self):
+    def __init__(self, challenge: Challenge):
+        self.t = 1
         self.score = 0
+        self.challenge = challenge
         self.cars = []
         self.streets = []
         self.intersections = []
-    
-    def loadDataFromChallenge(self, challenge: Challenge):
         for intersection in challenge.dataManager.intersections.values():
             self.addIntersection(intersection)
         for street in challenge.dataManager.streets:
@@ -155,28 +185,38 @@ class DataManagerSolver:
     
     def getIntersectionFromId(self, id: int) -> IntersectionSolver | None:
         return next((i for i in self.intersections if i.intersection.id == id), None)
+    
+    def addScore(self):
+        self.score += self.challenge.pointForFinishing + (self.challenge.duration - self.t)
 
 def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
-    if challenge.duration == t:
-        return challenge
+    print(f"Tour n°{t}")
+    print("  Score actuel :", dataManager.score)
+    print("  Nombre de voitures inactives :", len([c for c in dataManager.cars if c.timeLeftInStreet == 0]))
+    print("  Temps perdu :", sum([c.timeLost for c in dataManager.cars]))
+    print("  Nombre de voitures sorties :", len([c for c in dataManager.cars if c.isArrived]))
+
+    dataManager.t = t
 
     for car in dataManager.cars:
+        print(f"    V{car.car.id} : {car.currentStreetIndex}/{len(car.car.streets)} [{car.currentStreet.street.street}]")
         if car.isArrived:
             continue
-        isAtEnd = car.decrementTimeLeft()
-        if isAtEnd and car.currentStreet.getWaitingCarPosition(car) == 0 and car.currentStreet.isLightGreen():
-            hasFinished = car.changeStreet()
-            if hasFinished:
-                dataManager.score += challenge.pointForFinishing + (challenge.duration - t)
+        car.decrementTimeLeft()
 
     for intersection in dataManager.intersections:
+        if intersection.currentTurn != -1:
+            street = intersection.getGreenStreet()
+            car = street.popWaitingCar()
+            if car: car.changeStreet()
         intersection.decrementTimeLeft()
 
 def scorer(challenge: Challenge):
-    dataManager = DataManagerSolver()
-    dataManager.loadDataFromChallenge(challenge)
-    # for i in range(1, challenge.duration + 1):
-    #     tour(challenge, dataManager, i)
+    print("== Création des instances ==")
+    dataManager = DataManagerSolver(challenge)
+    print("== Début de la simulation ==")
+    for i in range(1, challenge.duration + 1):
+        tour(challenge, dataManager, i)
     return dataManager, dataManager.score
 
 
@@ -184,4 +224,5 @@ def scorer(challenge: Challenge):
 if __name__ == "__main__":
     challenge = parse_challenge("./challenges/a_example.in")
     dataManager, score = scorer(challenge)
-    print(dataManager, score)
+    print("== Fin de la simulation ==")
+    print(f"Le score final est de {score}.")
