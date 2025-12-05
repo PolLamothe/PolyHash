@@ -11,6 +11,7 @@
 
 """
 from polystructure import Intersection
+from polyparser import parse_challenge
 
 
 def export_file(intersections : list[Intersection]) :
@@ -23,3 +24,7 @@ def export_file(intersections : list[Intersection]) :
         sched = intersection.getSchedule()
         for street, schedule in sched:
             f.write(f"{street.street} {schedule.time}\n")
+
+if __name__ == "__main__":
+    challenge = parse_challenge("./challenges/b_ocean.in")
+    export_file(list(challenge.getDataManager().getIntersections().values()))
