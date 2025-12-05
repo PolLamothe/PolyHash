@@ -217,7 +217,7 @@ def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
         intersection.decrementTimeLeft()
 
 def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False):
-    if dataManager.verbose: print("== Création des instances ==")
+    if verbose: print("== Création des instances ==")
     dataManager = DataManagerSolver(challenge, intersections, verbose = verbose)
     if dataManager.verbose: print("== Début de la simulation ==")
     for i in range(1, challenge.getDuration() + 1):

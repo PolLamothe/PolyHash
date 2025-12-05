@@ -32,6 +32,7 @@ if __name__ == "__main__":
                         metavar="sortie.txt")
     parser.add_argument('solution', type=str, default="empty",
                         help='solution program')
+    parser.add_argument('-v',help='verbose mode',action="store_true")
 
     args = parser.parse_args()
 
@@ -41,4 +42,4 @@ if __name__ == "__main__":
     if args.output is not None:
         # Sauvegarder le fichier généré
         print(f"Solution saved in {args.output}")
-    print(f"Score: {scorer(challenge,solution)}")
+    print(f"Score: {scorer(challenge,solution,args.v)}")
