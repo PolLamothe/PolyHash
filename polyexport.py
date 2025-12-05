@@ -14,8 +14,8 @@ from polystructure import Intersection
 from polyparser import parse_challenge
 
 
-def export_file(intersections : list[Intersection]) :
-    f = open("settingsSolver.txt", "x")
+def export_file(intersections : list[Intersection],outputFile : str) :
+    f = open("./solutions/"+outputFile, "x")
     f.write(f"{len(intersections)}\n")
 
     for intersection in intersections:

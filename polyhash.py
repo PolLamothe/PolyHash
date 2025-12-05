@@ -10,6 +10,7 @@ from polyparser import parse_challenge
 from polystructure import Challenge,Solver
 from polysolver import AvailableSolutions
 from polyscorer import scorer
+from polyexport import export_file
 
 if __name__ == "__main__":
     # La syntaxe exigée pour appeler le programme est
@@ -41,5 +42,5 @@ if __name__ == "__main__":
     solution = challenge.solve()
     if args.output is not None:
         # Sauvegarder le fichier généré
-        print(f"Solution saved in {args.output}")
+        export_file(solution,args.output)
     print(f"Score: {scorer(challenge,solution,args.v)}")
