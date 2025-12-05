@@ -28,11 +28,11 @@ if __name__ == "__main__":
     parser.add_argument('challenge', type=str,
                         help='challenge definition filename',
                         metavar="challenge.txt")
-    parser.add_argument('output', type=str, default=None,
-                        help='output filename',
-                        metavar="sortie.txt")
     parser.add_argument('solution', type=str, default="empty",
                         help='solution program')
+    parser.add_argument('-o', '--output', type=str, default=None,
+                        help='output filename',
+                        metavar="sortie.txt")
     parser.add_argument('-v',help='verbose mode',action="store_true")
 
     args = parser.parse_args()
