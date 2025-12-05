@@ -14,7 +14,7 @@ def parse_challenge(filename: str) -> Challenge:
     représenter votre challenge: dictionnaire, objet, etc
     """
     print(filename)
-    with open(filename, 'r') as f:
+    with open("./challenges/"+filename+".in", 'r') as f:
         # Lire la première ligne, la découper, et convertir les valeurs en entier
         line = f.readline().strip()
         # Strip everything after #

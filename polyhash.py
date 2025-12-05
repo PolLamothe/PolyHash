@@ -42,5 +42,5 @@ if __name__ == "__main__":
     solution = challenge.solve()
     if args.output is not None:
         # Sauvegarder le fichier généré
-        export_file(solution,args.output)
+        export_file(solution,args.challenge.split("/")[-1].split(".")[0],args.output)
     print(f"Score: {scorer(challenge,solution,args.v)}")
