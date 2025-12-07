@@ -191,7 +191,7 @@ class DataManagerSolver:
         return next((i for i in self.intersections if i.intersection.getId() == id), None)
     
     def addScore(self):
-        self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - self.t)
+        self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - (self.t - 1))
 
 def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
     if dataManager.verbose:
