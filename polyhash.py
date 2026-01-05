@@ -9,8 +9,10 @@
 from polyparser import parse_challenge
 from polystructure import Challenge,Solver
 from polysolver import AvailableSolutions
-from polyscorer import scorer
+from polyscorer import scorer,exportCSV
 from polyexport import export_file
+import csv
+import time
 
 if __name__ == "__main__":
     # La syntaxe exigée pour appeler le programme est
@@ -34,6 +36,7 @@ if __name__ == "__main__":
                         help='output filename',
                         metavar="sortie.txt")
     parser.add_argument('-v',help='verbose mode',action="store_true")
+    parser.add_argument('-d',help='diagnose mode',action="store_true")
 
     args = parser.parse_args()
 
@@ -43,4 +46,12 @@ if __name__ == "__main__":
     if args.output is not None:
         # Sauvegarder le fichier généré
         export_file(solution,args.challenge.split("/")[-1].split(".")[0],args.output)
-    print(f"Score: {scorer(challenge,solution,args.v)}")
+    scorerResult = scorer(challenge,solution,args.v)
+    if args.d:
+        print("Generating diagnose")
+        diagnose = exportCSV(scorerResult)
+        with open("./diagnose/"+str(int(time.time()))+".csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerows(diagnose)
+        print("Diagnose exported")
+    print(f"Score: {scorerResult.score}")

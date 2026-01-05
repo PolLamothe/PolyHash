@@ -183,3 +183,37 @@ class Challenge:
 class Solver:
     def solve(challenge : Challenge):
         raise NotImplementedError()
+
+@dataclass
+class ScorerIntersectionStreetHistory:
+    greenState : bool
+    waitingCars : int
+    time : int
+
+@dataclass
+class ScorerIntersectionStreet:
+    street : Street
+    scorerIntersections : ScorerIntersection
+    history : list[ScorerIntersectionStreetHistory]
+
+@dataclass
+class ScorerIntersection:
+    intersection : Intersection
+    streets : list[ScorerIntersectionStreet]
+
+    def getScorerIntersection(scorerIntersections : list[ScorerIntersection],intersection : Intersection) -> ScorerIntersection:
+        for scorerIntersection in scorerIntersections:
+            if scorerIntersection.intersection == intersection:
+                return scorerIntersection
+        return None
+    
+    def getScorerIntersectionStreet(self,street : Street) -> ScorerIntersectionStreet:
+        for scorerIntersectionStreet in self.streets:
+            if scorerIntersectionStreet.street == street:
+                return scorerIntersectionStreet
+        return None
+
+@dataclass
+class ScorerResult:
+    score : int
+    intersections : list[ScorerIntersection]

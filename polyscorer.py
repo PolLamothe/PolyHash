@@ -1,5 +1,5 @@
 from __future__ import annotations
-from polystructure import Challenge, Car, Street, Intersection
+from polystructure import Challenge, Car, Street, Intersection,ScorerResult,ScorerIntersectionStreet,ScorerIntersection,ScorerIntersectionStreetHistory
 from polyparser import parse_challenge
 
 class IntersectionSolver:
@@ -193,7 +193,7 @@ class DataManagerSolver:
     def addScore(self):
         self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - (self.t - 1))
 
-def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
+def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[ScorerIntersection]):
     if dataManager.verbose:
         print(f"Tour n°{t}")
         print("  Score actuel :", dataManager.score)
@@ -214,20 +214,37 @@ def tour(challenge: Challenge, dataManager: DataManagerSolver, t: int):
             street = intersection.getGreenStreet()
             car = street.popWaitingCar()
             if car: car.changeStreet()
+
+        scorerIntersection = ScorerIntersection.getScorerIntersection(scorerIntersections,intersection.intersection)
+        for street in intersection.streets:
+            ScorerIntersection.getScorerIntersectionStreet(scorerIntersection,street.street).history.append(ScorerIntersectionStreetHistory(street.isLightGreen(),len(street.carsWaitingAtLight),t))
         intersection.decrementTimeLeft()
 
-def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False):
+def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False) -> ScorerResult:
     if verbose: print("== Création des instances ==")
     dataManager = DataManagerSolver(challenge, intersections, verbose = verbose)
+
+    scorerIntersections = []
+    for intersection in challenge.getDataManager().getIntersections().values():
+        scorerIntersections.append(ScorerIntersection(intersection,[]))
+        for street in intersection.getStreets():
+            scorerIntersections[-1].streets.append(ScorerIntersectionStreet(street,scorerIntersections,[]))
+    
     if dataManager.verbose: print("== Début de la simulation ==")
     for i in range(1, challenge.getDuration() + 1):
-        tour(challenge, dataManager, i)
+        tour(dataManager, i,scorerIntersections)
     if dataManager.verbose:
         print("== Fin de la simulation ==")
         print(f"Le score final est de {dataManager.score}.")
-    return dataManager, dataManager.score
+    return ScorerResult(dataManager.score,scorerIntersections)
 
-
+def exportCSV(scorerResult : ScorerResult) -> list:
+    result = [["IntersectionId","StreetName","Time","GreenState","WaitingCars"]]
+    for intersection in scorerResult.intersections:
+        for street in intersection.streets:
+            for data in street.history:
+                result.append([intersection.intersection.getId(),street.street.street,data.time,data.greenState,data.waitingCars])
+    return result
 
 if __name__ == "__main__":
     challenge = parse_challenge("./challenges/b_ocean.in")
