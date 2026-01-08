@@ -6,9 +6,11 @@
 from enum import Enum
 from solvers.empty import EmptySolver
 from polystructure import Solver
+from solvers.unused import UnusedStreetSolver
 
 class AvailableSolutions(Enum):
     EMPTY : Solver = EmptySolver
+    UNUSED : Solver = UnusedStreetSolver
 
     def getFromName(name : str) -> Solver:
         for solution in AvailableSolutions:
