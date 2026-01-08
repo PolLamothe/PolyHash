@@ -23,7 +23,7 @@ def export_file(intersections : list[Intersection],challenge : str,outputFile : 
         f.write(f"{len(intersection.getStreets())}\n")
         sched = intersection.getSchedule()
         for street, schedule in sched:
-            f.write(f"{street.street} {schedule.time}\n")
+            f.write(f"{street.name} {schedule.time}\n")
 
 if __name__ == "__main__":
     challenge = parse_challenge("./challenges/b_ocean.in")

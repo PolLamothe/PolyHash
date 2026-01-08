@@ -43,6 +43,7 @@ if __name__ == "__main__":
     challenge = parse_challenge(args.challenge)
     challenge.setSolver(AvailableSolutions.getFromName(args.solution))
     solution = challenge.solve()
+    challenge.removeUnused()
     if args.output is not None:
         # Sauvegarder le fichier généré
         export_file(solution,args.challenge.split("/")[-1].split(".")[0],args.output)
