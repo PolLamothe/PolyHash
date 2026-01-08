@@ -5,14 +5,14 @@
 """
 from enum import Enum
 from solvers.empty import EmptySolver
-from solvers.solver1 import EfficientSolver
+from solvers.mostused import MostUsedStreetsSolver
 from polystructure import Solver
 from solvers.unused import UnusedStreetSolver
 
 class AvailableSolutions(Enum):
     EMPTY : Solver = EmptySolver
     UNUSED : Solver = UnusedStreetSolver
-    EFFICIENT : Solver = EfficientSolver
+    MOSTUSED : Solver = MostUsedStreetsSolver
     
     def getFromName(name : str) -> Solver:
         for solution in AvailableSolutions:
