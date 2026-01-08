@@ -202,9 +202,10 @@ def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[Score
 
     dataManager.t = t
 
-    for intersection in dataManager.intersections:
-        if intersection.currentTurn != -1:
-            print(f"I{intersection.intersection.getId()} R{intersection.getGreenStreet().street.name} est vert")
+    if dataManager.verbose:
+        for intersection in dataManager.intersections:
+            if intersection.currentTurn != -1:
+                print(f"I{intersection.intersection.getId()} R{intersection.getGreenStreet().street.name} est vert")
 
     for car in dataManager.cars:
         if dataManager.verbose: print(f"    V{car.car.getId()} : {car.currentStreetIndex}/{len(car.car.getStreets())} [{car.currentStreet.street.name}] temp restant à parcourir : [{car.timeLeftInStreet}]")
@@ -230,7 +231,6 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
 
     scorerIntersections = []
     for intersection in challenge.getDataManager().getIntersections().values():
-        print(intersection)
         scorerIntersections.append(ScorerIntersection(intersection,[]))
         for street in intersection.getStreets():
             scorerIntersections[-1].streets.append(ScorerIntersectionStreet(street,scorerIntersections,[]))
