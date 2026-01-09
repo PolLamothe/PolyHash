@@ -168,7 +168,7 @@ class DataManager:
         if len(car.street) != len(street):
             raise Exception("Erreur insertion Car : street Inexistante : ")
         self.__cars.append(Car(street))
-        return Car(street)
+        return self.__cars[-1]
     
     def removeUnused(self):
         deleteId = []

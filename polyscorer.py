@@ -23,7 +23,6 @@ class IntersectionSolver:
 
     def decrementTimeLeft(self):
         if self.currentTurn == -1:
-            if self.dataManager.verbose: print(f"    I{self.intersection.getId()} /!\\ : Toujours rouge")
             return
         if self.timeLeft - 1 == 0:
             self.currentTurn = (self.currentTurn + 1) % len(self.intersection.getSchedule())
@@ -71,7 +70,7 @@ class StreetSolver:
     def popWaitingCar(self) -> CarSolver | None:
         if self.intersectionAtEnd is None:
             raise AttributeError("No intersection at the end.")
-        if not self.carsWaitingAtLight:
+        if len(self.carsWaitingAtLight) == 0:
             return None
         return self.carsWaitingAtLight.pop(0)
 
@@ -88,6 +87,7 @@ class CarSolver:
     currentStreet: StreetSolver | None
     currentStreetIndex: int
     timeLeftInStreet: int
+    waitingAtLight : bool
     timeLost: int # Métrique pour connaître le temps attendu en trop
 
     def __init__(self, car: Car, dataManager: DataManagerSolver):
@@ -98,6 +98,7 @@ class CarSolver:
         self.currentStreet = dataManager.getStreetFromName(car.getStreets()[0].name)
         self.timeLeftInStreet = 0
         self.timeLost = 0
+        self.waitingAtLight = True
         self.currentStreet.pushWaitingCar(self)
         if dataManager.verbose: print(f" V{car.getId()} instanciée")
     
@@ -110,6 +111,7 @@ class CarSolver:
         oldStreet = self.currentStreet.street.name
         self.currentStreetIndex += 1
         self.currentStreet = self.dataManager.getStreetFromName(self.car.getStreets()[self.currentStreetIndex].name)
+        self.waitingAtLight = False
         self.timeLeftInStreet = int(self.currentStreet.street.length)-1
         if self.dataManager.verbose: print(f"    V{self.car.getId()} : {oldStreet} -> {self.currentStreet.street.name}")
         return
@@ -120,13 +122,14 @@ class CarSolver:
         """
         if self.isArrived:
             return
-        if self.timeLeftInStreet == 0:
+        if self.timeLeftInStreet == 0 and not self.waitingAtLight:
             if self.currentStreetIndex + 1 == len(self.car.getStreets()):
                 self.currentStreetIndex += 1
                 self.isArrived = True
                 self.dataManager.addScore()
                 if self.dataManager.verbose: print(f"   V{self.car.getId()} : Arrivée à destination")
                 return
+            self.waitingAtLight = True
             self.currentStreet.pushWaitingCar(self)
         if self.timeLeftInStreet > 0:
             self.timeLeftInStreet -= 1
@@ -217,7 +220,8 @@ def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[Score
         if intersection.currentTurn != -1:
             street = intersection.getGreenStreet()
             car = street.popWaitingCar()
-            if car: car.changeStreet()
+            if car:
+                car.changeStreet()
 
         scorerIntersection = ScorerIntersection.getScorerIntersection(scorerIntersections,intersection.intersection)
         for street in intersection.streets:

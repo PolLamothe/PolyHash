@@ -21,7 +21,7 @@ class UnusedStreetSolver(Solver):
                 usedStreets.append(street.name)
 
         for i in intersections.values():
-            streets = copy.deepcopy(i.getStreets())
+            streets = copy.copy(i.getStreets())
             for s in streets:
                 if s.name in usedStreets:
                     i.updateSchedule(s,Schedule(1))
