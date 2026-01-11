@@ -7,6 +7,6 @@
 from polystructure import Challenge, Solver, Intersection
 
 class EmptySolver(Solver):
-    def solve(challenge : Challenge)->list[Intersection]:
+    def solve(self,challenge : Challenge)->list[Intersection]:
         intersections = challenge.getDataManager().getIntersections()
         return [intersection for intersection in intersections.values()]

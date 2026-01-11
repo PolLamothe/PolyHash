@@ -24,7 +24,7 @@ def parse_challenge(filename: str) -> Challenge:
         challenge:Challenge = Challenge(simulation_time,number_intersections,number_streets,number_cars,score_per_car,[],[])
         for cpt_rues in range(number_streets):
             street = f.readline().strip().split()
-            rue:RawStreet = RawStreet(street[0], street[1], street[2],street[3])
+            rue:RawStreet = RawStreet(street[0], street[1], street[2],int(street[3]))
             challenge.getDataManager().addstreet(rue)
 
         for cpt_cars in range(number_cars):

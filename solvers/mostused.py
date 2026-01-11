@@ -5,7 +5,7 @@
 from polystructure import Challenge, Intersection, Street, Solver
 
 class MostUsedStreetsSolver(Solver):
-    def solve(challenge: Challenge)->list[Intersection]:
+    def solve(self,challenge: Challenge)->list[Intersection]:
         listeIntersections:dict[Street, Intersection] = challenge.getDataManager().getIntersections()
         dict_rues:dict[str,int] = {}
         for car in challenge.getDataManager().getCars():

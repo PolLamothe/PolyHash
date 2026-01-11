@@ -195,7 +195,7 @@ class DataManagerSolver:
     def addScore(self):
         self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - (self.t))
 
-def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[ScorerIntersection]):
+def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[ScorerIntersection],diagnose : bool):
     if dataManager.verbose:
         print(f"Tour n°{t}")
         print("  Score actuel :", dataManager.score)
@@ -222,14 +222,14 @@ def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[Score
             car = street.popWaitingCar()
             if car:
                 car.changeStreet()
-
-        scorerIntersection = ScorerIntersection.getScorerIntersection(scorerIntersections,intersection.intersection)
-        for street in intersection.streets:
-            scorerIntersectionStreet = ScorerIntersection.getScorerIntersectionStreet(scorerIntersection,street.street)
-            scorerIntersectionStreet.history.append(ScorerIntersectionStreetHistory(street.isLightGreen(),len(street.carsWaitingAtLight),t))
+        if diagnose:
+            scorerIntersection = ScorerIntersection.getScorerIntersection(scorerIntersections,intersection.intersection)
+            for street in intersection.streets:
+                scorerIntersectionStreet = ScorerIntersection.getScorerIntersectionStreet(scorerIntersection,street.street)
+                scorerIntersectionStreet.history.append(ScorerIntersectionStreetHistory(street.isLightGreen(),len(street.carsWaitingAtLight),t))
         intersection.decrementTimeLeft()
 
-def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False) -> ScorerResult:
+def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False,diagnose: bool = False) -> ScorerResult:
     if verbose: print("== Création des instances ==")
     dataManager = DataManagerSolver(challenge, intersections, verbose = verbose)
 
@@ -241,7 +241,7 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
     
     if dataManager.verbose: print("== Début de la simulation ==")
     for i in range(0, challenge.getDuration() + 1):
-        tour(dataManager, i,scorerIntersections)
+        tour(dataManager, i,scorerIntersections,diagnose)
     if dataManager.verbose:
         print("== Fin de la simulation ==")
         print(f"Le score final est de {dataManager.score}.")

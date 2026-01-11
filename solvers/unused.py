@@ -8,7 +8,7 @@ from polystructure import Challenge, Solver, Intersection,Schedule
 import copy
 
 class UnusedStreetSolver(Solver):
-    def solve(challenge : Challenge)->list[Intersection]:
+    def solve(self,challenge : Challenge)->list[Intersection]:
         intersections = challenge.getDataManager().getIntersections()
 
         usedStreets = []

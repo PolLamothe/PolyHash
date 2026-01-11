@@ -41,13 +41,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     challenge = parse_challenge(args.challenge)
-    challenge.setSolver(AvailableSolutions.getFromName(args.solution))
+    solver = AvailableSolutions.getFromName(args.solution)()
+    challenge.setSolver(solver)
     solution = challenge.solve()
+    challenge.removeEmptySchedule()
     challenge.removeUnused()
     if args.output is not None:
         # Sauvegarder le fichier généré
         export_file(solution,args.challenge.split("/")[-1].split(".")[0],args.output)
-    scorerResult = scorer(challenge,solution,args.v)
+    scorerResult = scorer(challenge,solution,args.v,args.d)
     if args.d:
         print("Generating diagnose")
         diagnose = exportCSV(scorerResult)

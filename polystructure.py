@@ -56,28 +56,17 @@ class Intersection:
                 return value[1]
         return None
     
-    def updateSchedule(self,street : Street,schedule : Schedule):
-        if schedule.time == 0:
-            for index,value in  enumerate(self.__streets):
-                if value.name == street.name:
-                    self.__streets.pop(index)
-                    break
-            for index,value in  enumerate(self.__schedule):
-                if value[0].name == street.name:
-                    self.__schedule.pop(index)
-                    break
-            return
-        for value in self.__schedule:
+    def updateSchedule(self, street: Street, schedule: Schedule):
+        for index, value in enumerate(self.__schedule):
             if value[0].name == street.name:
-                value = (value[0],schedule)
+                self.__schedule[index] = (value[0], schedule)
                 return
+        
         raise Exception("Cette intersection n'est pas liée à cette rue")
     
     def addSchedule(self,street : Street,schedule : Schedule):
-        if schedule.time == 0:
-            return
         if self.getSchedule(street) == None:
-            self.__schedule.append((street,Schedule))
+            self.__schedule.append((street,schedule))
         else :
             raise Exception("Cette intersection possède déja un schedule")
     
@@ -111,6 +100,15 @@ class Intersection:
     
     def __str__(self) -> str:
         return f'Intersection ID : {self.__id} | rues : {self.__streets} | schedules : {self.__schedule}'
+    
+    def removeEmptySchedule(self):
+        newSchedule = []
+        for index2,value2 in enumerate(self.__schedule):
+            if value2[1].time == 0:
+                self.__streets.remove(value2[0])
+            else:
+                newSchedule.append(value2)
+        self.__schedule = newSchedule
 
 class Car:
     carIdCount = 0
@@ -188,6 +186,10 @@ class DataManager:
     def getIntersections(self) -> dict[int,Intersection]:
         return self.__intersections
     
+    def removeEmptySchedule(self):
+        for intersection in self.__intersections.values():
+            intersection.removeEmptySchedule()
+
 class Challenge:
     """
     Classe formalisant toutes les infos du challenge à partir des données extraite du fichier
@@ -252,6 +254,9 @@ class Challenge:
     
     def removeUnused(self):
         self.__dataManager.removeUnused()
+
+    def removeEmptySchedule(self):
+        self.__dataManager.removeEmptySchedule()
     
 class Solver:
     def solve(challenge : Challenge) -> list[Intersection]:
