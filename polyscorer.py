@@ -193,7 +193,7 @@ class DataManagerSolver:
         return next((i for i in self.intersections if i.intersection.getId() == id), None)
     
     def addScore(self):
-        self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - (self.t - 1))
+        self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - (self.t))
 
 def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[ScorerIntersection]):
     if dataManager.verbose:
@@ -240,7 +240,7 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
             scorerIntersections[-1].streets.append(ScorerIntersectionStreet(street,scorerIntersections,[]))
     
     if dataManager.verbose: print("== Début de la simulation ==")
-    for i in range(1, challenge.getDuration() + 1):
+    for i in range(0, challenge.getDuration() + 1):
         tour(dataManager, i,scorerIntersections)
     if dataManager.verbose:
         print("== Fin de la simulation ==")
