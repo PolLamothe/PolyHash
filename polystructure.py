@@ -5,7 +5,7 @@
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class RawStreet:
@@ -24,6 +24,14 @@ class Street:
     length : int
     source : Intersection
     destination : Intersection
+    
+    def __hash__(self):
+        return hash(self.name)
+    
+    def __eq__(self, other):
+        if isinstance(other, Street):
+            return self.name == other.name
+        return False
 
 @dataclass
 class Schedule:
@@ -34,12 +42,17 @@ class Intersection:
     def __init__(self,id : int):
         self.__id = int(id)
         self.__streets : list[Street] = []
+        self.__streets_map : dict[str, Street] = {} 
+        
         self.__schedule : list[tuple[Street,Schedule]] = []
+        self.__schedule_map : dict[str, Schedule] = {}
 
     def addStreet(self,street : Street,schedule : Schedule = Schedule()):
         if not isinstance(street,Street):
             raise Exception(street," is not a Street")
+        
         self.__streets.append(street)
+        self.__streets_map[street.name] = street
         self.addSchedule(street,schedule)
 
     def getId(self) -> int:
@@ -48,34 +61,41 @@ class Intersection:
     def getStreets(self) -> list[Street]:
         return self.__streets
     
-    def getSchedule(self,street : Street = None) -> list[tuple[Street,Schedule]]:
+    def getStreetByName(self, name: str) -> Street:
+        return self.__streets_map.get(name)
+    
+    def getSchedule(self,street : Street = None) -> list[tuple[Street,Schedule]] | Schedule:
         if street == None:
             return self.__schedule
-        for value in self.__schedule:
-            if value[0] == street:
-                return value[1]
-        return None
+        return self.__schedule_map.get(street.name)
     
     def updateSchedule(self, street: Street, schedule: Schedule):
+        if street.name not in self.__schedule_map:
+             raise Exception("Cette intersection n'est pas liée à cette rue")
+        
+        self.__schedule_map[street.name] = schedule
+        
         for index, value in enumerate(self.__schedule):
             if value[0].name == street.name:
                 self.__schedule[index] = (value[0], schedule)
                 return
         
-        raise Exception("Cette intersection n'est pas liée à cette rue")
-    
     def addSchedule(self,street : Street,schedule : Schedule):
-        if self.getSchedule(street) == None:
+        if street.name not in self.__schedule_map:
             self.__schedule.append((street,schedule))
+            self.__schedule_map[street.name] = schedule
         else :
-            raise Exception("Cette intersection possède déja un schedule")
+            raise Exception("Cette intersection possède déja un schedule pour cette rue")
     
     def deleteSchedule(self,street : Street):
-        for index,value in enumerate(self.__schedule):
-            if value[0] == street:
-                self.__schedule.pop(index)
-                return
-        raise Exception("Cette intersection n'est pas liée à cette rue")
+        if street.name in self.__schedule_map:
+            del self.__schedule_map[street.name]
+            for index,value in enumerate(self.__schedule):
+                if value[0] == street:
+                    self.__schedule.pop(index)
+                    return
+        else:
+            raise Exception("Cette intersection n'est pas liée à cette rue")
     
     def changeOrder(self,streetToReplace : Street,streetToPlace : Street):
         indexToReplace = None
@@ -85,30 +105,42 @@ class Intersection:
                 indexToPlace = index
             if value.name == streetToReplace.name:
                 indexToReplace = index
-        temp = self.__streets[indexToPlace]
-        self.__streets[indexToPlace] = self.__streets[indexToReplace]
-        self.__streets[indexToReplace] = temp
+                
+        if indexToPlace is not None and indexToReplace is not None:
+            self.__streets[indexToPlace], self.__streets[indexToReplace] = self.__streets[indexToReplace], self.__streets[indexToPlace]
 
+        indexToReplace = None
+        indexToPlace = None
         for index,value in enumerate(self.__schedule):
             if value[0].name == streetToPlace.name:
                 indexToPlace = index
             if value[0].name  == streetToReplace.name:
                 indexToReplace = index
-        temp = self.__schedule[indexToPlace]
-        self.__schedule[indexToPlace] = self.__schedule[indexToReplace]
-        self.__schedule[indexToReplace] = temp
+                
+        if indexToPlace is not None and indexToReplace is not None:
+            self.__schedule[indexToPlace], self.__schedule[indexToReplace] = self.__schedule[indexToReplace], self.__schedule[indexToPlace]
     
     def __str__(self) -> str:
         return f'Intersection ID : {self.__id} | rues : {self.__streets} | schedules : {self.__schedule}'
     
     def removeEmptySchedule(self):
         newSchedule = []
-        for index2,value2 in enumerate(self.__schedule):
+        self.__schedule_map.clear()
+        
+        streets_to_keep = []
+        self.__streets_map.clear()
+
+        for value2 in self.__schedule:
             if value2[1].time == 0:
-                self.__streets.remove(value2[0])
+                pass
             else:
                 newSchedule.append(value2)
+                self.__schedule_map[value2[0].name] = value2[1]
+                streets_to_keep.append(value2[0])
+                self.__streets_map[value2[0].name] = value2[0]
+
         self.__schedule = newSchedule
+        self.__streets = [s for s in self.__streets if s in streets_to_keep] 
 
 class Car:
     carIdCount = 0
@@ -127,6 +159,8 @@ class DataManager:
     
     def __init__(self):
         self.__streets : list[Street] = []
+        self.__streets_map : dict[str, Street] = {}
+        
         self.__intersections : dict[int,Intersection] = {}
         self.__cars : list[Car] = []
     
@@ -150,7 +184,10 @@ class DataManager:
 
         newstreet = Street(street.name,street.length,source,destination)
         destination.addStreet(newstreet)
+        
         self.__streets.append(newstreet)
+        self.__streets_map[newstreet.name] = newstreet # Indexation
+        
         return newstreet
     
     def addCar(self,car : RawCar) -> Car:
@@ -158,13 +195,13 @@ class DataManager:
             raise Exception(car," is not a RawCar")
 
         street : list[Street] = []
-        for street1 in car.street:
-            for street2 in self.__streets:
-                if street2.name == street1:
-                    street.append(street2)
-                    break
-        if len(car.street) != len(street):
-            raise Exception("Erreur insertion Car : street Inexistante : ")
+        
+        for street_name in car.street:
+            if street_name in self.__streets_map:
+                street.append(self.__streets_map[street_name])
+            else:
+                raise Exception(f"Erreur insertion Car : street Inexistante : {street_name}")
+                
         self.__cars.append(Car(street))
         return self.__cars[-1]
     
@@ -276,22 +313,39 @@ class ScorerIntersectionStreet:
     history : list[ScorerIntersectionStreetHistory]
 
     def getStateAtInstant(self,time : int) -> ScorerIntersectionStreetHistory:
+        if 0 <= time < len(self.history) and self.history[time].time == time:
+             return self.history[time]
+        
         for data in self.history:
             if data.time == time:
                 return data
+        return None
 
 @dataclass
 class ScorerIntersection:
     intersection : Intersection
     streets : list[ScorerIntersectionStreet]
+    _streets_map : dict[str, ScorerIntersectionStreet] = field(default_factory=dict, repr=False)
 
-    def getScorerIntersection(scorerIntersections : list[ScorerIntersection],intersection : Intersection) -> ScorerIntersection:
+    def __post_init__(self):
+        if self.streets:
+            for s in self.streets:
+                self._streets_map[s.street.name] = s
+
+    @staticmethod
+    def getScorerIntersection(scorerIntersections : list[ScorerIntersection] | dict[int, ScorerIntersection], intersection : Intersection) -> ScorerIntersection:
+        if isinstance(scorerIntersections, dict):
+            return scorerIntersections.get(intersection.getId())
+            
         for scorerIntersection in scorerIntersections:
             if scorerIntersection.intersection.getId() == intersection.getId():
                 return scorerIntersection
         raise Exception("Cette intersection n'est pas dans la liste fourni")
     
     def getScorerIntersectionStreet(self,street : Street) -> ScorerIntersectionStreet:
+        if self._streets_map and street.name in self._streets_map:
+            return self._streets_map[street.name]
+            
         for scorerIntersectionStreet in self.streets:
             if scorerIntersectionStreet.street.name == street.name:
                 return scorerIntersectionStreet
@@ -299,11 +353,15 @@ class ScorerIntersection:
     
     def getGreeenStreetAtInstant(self,instant : int) -> ScorerIntersectionStreetHistory:
         for street in self.streets:
-            if street.getStateAtInstant(instant).greenState:
-                return street.getStateAtInstant(instant)
+            state = street.getStateAtInstant(instant)
+            if state and state.greenState:
+                return state
         raise Exception("Aucune rue n'était verte")
 
 @dataclass
 class ScorerResult:
     score : int
     intersections : list[ScorerIntersection]
+    
+    def getIntersectionsMap(self) -> dict[int, ScorerIntersection]:
+        return {i.intersection.getId(): i for i in self.intersections}

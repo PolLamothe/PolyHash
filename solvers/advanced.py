@@ -89,11 +89,12 @@ class AdvancedSolver(Solver):
                         addIntoList(currentConficts,Conflict(green.scorerIntersectionStreet,street,1))
 
         currentConficts.sort(key=lambda x: x.count,reverse=True)
-        print("Itération ",i," plus grand conflit : ",currentConficts[0].count)
+        if len(currentConficts) > 0:
+            print("Plus grand conflit : ",currentConficts[0].count)
 
-        for conflict in currentConficts[:int(len(currentConficts)*0.1)]:
-            conflict.scorerIntersectionStreet1.scorerIntersections.intersection.changeOrder(conflict.scorerIntersectionStreet1.street,conflict.scorerIntersectionStreet2.street)
-        feedback = scorer(challenge,[intersection for intersection in intersections.values()],False,True)
-        print("Remplacements effectués, nouveau score : ",feedback.score)
+            for conflict in currentConficts[:int(len(currentConficts)*0.1)]:
+                conflict.scorerIntersectionStreet1.scorerIntersections.intersection.changeOrder(conflict.scorerIntersectionStreet1.street,conflict.scorerIntersectionStreet2.street)
+            feedback = scorer(challenge,[intersection for intersection in intersections.values()],False,True)
+            print("Remplacements effectués, nouveau score : ",feedback.score)
                     
         return [intersection for intersection in intersections.values()]
