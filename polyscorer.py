@@ -1,6 +1,6 @@
 from __future__ import annotations
 from collections import deque
-from polystructure import Challenge, Car, Street, Intersection, ScorerResult, ScorerIntersectionStreet, ScorerIntersection, ScorerIntersectionStreetHistory
+from polystructure import Challenge, Car, Street, Intersection, ScorerResult, ScorerIntersectionStreet, ScorerIntersection, ScorerIntersectionStreetHistory,ScorerCar
 from polyparser import parse_challenge
 
 class IntersectionSolver:
@@ -246,6 +246,7 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
 
     scorerIntersections = []
     diagnose_links = []
+    scorerCars = {}
 
     if diagnose:
         scorer_streets_map = {}
@@ -270,12 +271,15 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
     duration = challenge.getDuration()
     for i in range(0, duration + 1):
         tour(dataManager, i, diagnose_links)
+
+    for car in dataManager.cars:
+        scorerCars[car.car] = ScorerCar(car.isArrived,car.car)
         
     if dataManager.verbose:
         print("== Fin de la simulation ==")
         print(f"Le score final est de {dataManager.score}.")
         
-    return ScorerResult(dataManager.score, scorerIntersections)
+    return ScorerResult(dataManager.score, scorerIntersections,scorerCars)
 
 def exportCSV(scorerResult : ScorerResult) -> list:
     result = [["IntersectionId","StreetName","Time","GreenState","WaitingCars"]]

@@ -4,7 +4,7 @@
 from polystructure import Challenge, Intersection, Solver, Schedule,Car
 import copy
 from dataclasses import dataclass
-from polyscorer import scorer,ScorerResult,ScorerIntersectionStreetHistory,ScorerIntersection,ScorerIntersectionStreet
+from polyscorer import scorer,ScorerResult,ScorerIntersectionStreetHistory,ScorerIntersection,ScorerIntersectionStreet,ScorerCar
 
 @dataclass
 class WrappedCar:
@@ -132,5 +132,27 @@ class AdvancedSolver(Solver):
                     data[0].scorerIntersections.intersection.updateSchedule(data[0].street,Schedule(currentSchedule.time-1))
                 print("Augmentation non fructueuse, annulation de la dernière augmentation")
                 break
+        
+        #Maintenant nous allons enlevé les voitures qui n'ont pas pu finir afin de potentiellement libérer des rues
+
+        usedStreets = set([])
+
+        for car in feedback.cars.values():
+            if not car.finished:
+                continue
+            for index,street in enumerate(car.car.getStreets()[:-1]):
+                usedStreets.add(street.name)
+
+        for i in intersections.values():
+            streets = copy.copy(i.getStreets())
+            for s in streets:
+                if s.name not in usedStreets:
+                    i.updateSchedule(s,Schedule(0))
+
+        challenge.removeEmptySchedule()
+        challenge.removeUnused()
+
+        feedback = scorer(challenge,[intersection for intersection in intersections.values()],False,True)
+        print("Suppression des voitures non arrivées, nouveau score : ",feedback.score)
         
         return [intersection for intersection in intersections.values()]

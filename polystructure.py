@@ -368,9 +368,15 @@ class ScorerIntersection:
         return hash(self.intersection)
 
 @dataclass
+class ScorerCar:
+    finished : bool
+    car : Car
+
+@dataclass
 class ScorerResult:
     score : int
     intersections : list[ScorerIntersection]
+    cars : dict[Car,ScorerCar]
     
     def getIntersectionsMap(self) -> dict[int, ScorerIntersection]:
         return {i.intersection.getId(): i for i in self.intersections}
