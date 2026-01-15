@@ -96,5 +96,41 @@ class AdvancedSolver(Solver):
                 conflict.scorerIntersectionStreet1.scorerIntersections.intersection.changeOrder(conflict.scorerIntersectionStreet1.street,conflict.scorerIntersectionStreet2.street)
             feedback = scorer(challenge,[intersection for intersection in intersections.values()],False,True)
             print("Remplacements effectués, nouveau score : ",feedback.score)
-                    
+
+        #Maintenant nous allons augmenter la durée des rues les plus bouchées
+
+        while True:
+            insersectionStreetBouchon : dict[ScorerIntersectionStreet,int]= {}
+
+            for index,intersection in enumerate(intersections.values()):
+                scorerIntersection : ScorerIntersection = ScorerIntersection.getScorerIntersection(feedback.intersections,intersection)
+                for street in scorerIntersection.streets:
+                    insersectionStreetBouchon[street] = 0
+                    for instant in range(challenge.getDuration()):
+                        state = street.getStateAtInstant(instant)
+                        if state.waitingCars == 0:
+                            continue
+                        if state.greenState:
+                            insersectionStreetBouchon[street] += state.waitingCars-1
+                        else:
+                            insersectionStreetBouchon[street] += state.waitingCars
+
+            insersectionStreetBouchon : list[tuple[ScorerIntersectionStreet,int]] = list(insersectionStreetBouchon.items())
+            insersectionStreetBouchon.sort(key= lambda x : x[1],reverse=True)
+
+            for data in insersectionStreetBouchon[:int(len(insersectionStreetBouchon)*0.02)]:
+                currentSchedule : Schedule = data[0].scorerIntersections.intersection.getSchedule(data[0].street)
+                data[0].scorerIntersections.intersection.updateSchedule(data[0].street,Schedule(currentSchedule.time+1))
+            
+            feedbackTemp = scorer(challenge,[intersection for intersection in intersections.values()],False,True)
+            if feedbackTemp.score > feedback.score:
+                print("Augmentations effectuées, nouveau score : ",feedbackTemp.score)
+                feedback = feedbackTemp
+            else:
+                for data in insersectionStreetBouchon[:int(len(insersectionStreetBouchon)*0.02)]:
+                    currentSchedule : Schedule = data[0].scorerIntersections.intersection.getSchedule(data[0].street)
+                    data[0].scorerIntersections.intersection.updateSchedule(data[0].street,Schedule(currentSchedule.time-1))
+                print("Augmentation non fructueuse, annulation de la dernière augmentation")
+                break
+        
         return [intersection for intersection in intersections.values()]

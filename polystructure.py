@@ -142,6 +142,9 @@ class Intersection:
         self.__schedule = newSchedule
         self.__streets = [s for s in self.__streets if s in streets_to_keep] 
 
+    def __hash__(self):
+        return hash(str(self))
+
 class Car:
     carIdCount = 0
     def __init__(self,streets : list[Street]):
@@ -320,6 +323,9 @@ class ScorerIntersectionStreet:
             if data.time == time:
                 return data
         return None
+    
+    def __hash__(self):
+        return hash(self.street) + hash(self.scorerIntersections)
 
 @dataclass
 class ScorerIntersection:
@@ -357,6 +363,9 @@ class ScorerIntersection:
             if state and state.greenState:
                 return state
         raise Exception("Aucune rue n'était verte")
+    
+    def __hash__(self):
+        return hash(self.intersection)
 
 @dataclass
 class ScorerResult:
