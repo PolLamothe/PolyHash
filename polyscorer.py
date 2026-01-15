@@ -217,16 +217,16 @@ def tour(dataManager: DataManagerSolver, t: int,scorerIntersections : list[Score
         car.decrementTimeLeft()
 
     for intersection in dataManager.intersections:
+        if diagnose:
+            scorerIntersection = ScorerIntersection.getScorerIntersection(scorerIntersections,intersection.intersection)
+            for street in intersection.streets:
+                scorerIntersectionStreet = ScorerIntersection.getScorerIntersectionStreet(scorerIntersection,street.street)
+                scorerIntersectionStreet.history.append(ScorerIntersectionStreetHistory(street.isLightGreen(),len(street.carsWaitingAtLight),t,scorerIntersectionStreet))
         if intersection.currentTurn != -1:
             street = intersection.getGreenStreet()
             car = street.popWaitingCar()
             if car:
                 car.changeStreet()
-        if diagnose:
-            scorerIntersection = ScorerIntersection.getScorerIntersection(scorerIntersections,intersection.intersection)
-            for street in intersection.streets:
-                scorerIntersectionStreet = ScorerIntersection.getScorerIntersectionStreet(scorerIntersection,street.street)
-                scorerIntersectionStreet.history.append(ScorerIntersectionStreetHistory(street.isLightGreen(),len(street.carsWaitingAtLight),t))
         intersection.decrementTimeLeft()
 
 def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False,diagnose: bool = False) -> ScorerResult:
@@ -234,10 +234,10 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
     dataManager = DataManagerSolver(challenge, intersections, verbose = verbose)
 
     scorerIntersections = []
-    for intersection in challenge.getDataManager().getIntersections().values():
+    for intersection in intersections:
         scorerIntersections.append(ScorerIntersection(intersection,[]))
         for street in intersection.getStreets():
-            scorerIntersections[-1].streets.append(ScorerIntersectionStreet(street,scorerIntersections,[]))
+            scorerIntersections[-1].streets.append(ScorerIntersectionStreet(street,scorerIntersections[-1],[]))
     
     if dataManager.verbose: print("== Début de la simulation ==")
     for i in range(0, challenge.getDuration() + 1):

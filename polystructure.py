@@ -267,12 +267,18 @@ class ScorerIntersectionStreetHistory:
     greenState : bool
     waitingCars : int
     time : int
+    scorerIntersectionStreet : ScorerIntersectionStreet
 
 @dataclass
 class ScorerIntersectionStreet:
     street : Street
     scorerIntersections : ScorerIntersection
     history : list[ScorerIntersectionStreetHistory]
+
+    def getStateAtInstant(self,time : int) -> ScorerIntersectionStreetHistory:
+        for data in self.history:
+            if data.time == time:
+                return data
 
 @dataclass
 class ScorerIntersection:
@@ -281,15 +287,21 @@ class ScorerIntersection:
 
     def getScorerIntersection(scorerIntersections : list[ScorerIntersection],intersection : Intersection) -> ScorerIntersection:
         for scorerIntersection in scorerIntersections:
-            if scorerIntersection.intersection == intersection:
+            if scorerIntersection.intersection.getId() == intersection.getId():
                 return scorerIntersection
-        return None
+        raise Exception("Cette intersection n'est pas dans la liste fourni")
     
     def getScorerIntersectionStreet(self,street : Street) -> ScorerIntersectionStreet:
         for scorerIntersectionStreet in self.streets:
             if scorerIntersectionStreet.street.name == street.name:
                 return scorerIntersectionStreet
-        return None
+        raise Exception("Cette rue n'est pas dans cette intersection")
+    
+    def getGreeenStreetAtInstant(self,instant : int) -> ScorerIntersectionStreetHistory:
+        for street in self.streets:
+            if street.getStateAtInstant(instant).greenState:
+                return street.getStateAtInstant(instant)
+        raise Exception("Aucune rue n'était verte")
 
 @dataclass
 class ScorerResult:

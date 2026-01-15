@@ -9,12 +9,14 @@ from solvers.mostused import MostUsedStreetsSolver
 from polystructure import Solver
 from solvers.unused import UnusedStreetSolver
 from solvers.intersectionsolver import IntersectionSolver
+from solvers.advanced import AdvancedSolver
 
 class AvailableSolutions(Enum):
     EMPTY : Solver = EmptySolver
     UNUSED : Solver = UnusedStreetSolver
     MOSTUSED : Solver = MostUsedStreetsSolver
     INTERSECTIONSOLVER : Solver = IntersectionSolver
+    ADVANCED : Solver = AdvancedSolver
 
     def getFromName(name : str) -> Solver:
         for solution in AvailableSolutions:
