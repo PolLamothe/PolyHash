@@ -151,8 +151,4 @@ class AdvancedSolver(Solver):
 
         challenge.removeEmptySchedule()
         challenge.removeUnused()
-
-        feedback = scorer(challenge,[intersection for intersection in intersections.values()],False,True)
-        print("Suppression des voitures non arrivées, nouveau score : ",feedback.score)
-        
         return [intersection for intersection in intersections.values()]
