@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
-Implementation d'un scorer qui donnera le plus de temps à la rue qui aura le plus de trafic
+Implementation d'un solveur qui donnera le plus de temps à la rue qui aura le plus de trafic
 """
 
 from polystructure import Challenge, Intersection, Street, Solver
@@ -26,5 +29,3 @@ class MostUsedStreetsSolver(Solver):
                         skdl.time = max(1, dict_rues[street.name] // 6)
         
         return [ intersection for intersection in listeIntersections.values() ]
-        
-        ''' Le solver doit retourner une liste d'intersections'''

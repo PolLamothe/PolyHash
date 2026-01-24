@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 Ce solver s'inspire de la solution décrite dans ce repo Github : https://github.com/sagishporer/hashcode-2021-qualification
 """
@@ -28,7 +31,6 @@ def addIntoList(conflicts: list[Conflict], newConflict: Conflict) -> list[Confli
     return conflicts
 
 class AdvancedSolver(Solver): 
-
     def solve(self, challenge: Challenge) -> list[Intersection]:
         cars: list[WrappedCar] = []
 

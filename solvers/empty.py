@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-solver vide pour tester la structure
+Solver vide pour tester la structure (toutes les rues sont au vert pendant une seconde)
 """
 
 from polystructure import Challenge, Solver, Intersection

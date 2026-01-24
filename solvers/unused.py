@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""solveur trop meilleur que les autres
+"""
+Solveur qui retire les rues inutilisées.
 """
 
 from polystructure import Challenge, Solver, Intersection, Schedule

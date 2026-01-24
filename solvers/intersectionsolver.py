@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 Solveur qui attribut un budget de 10 seconde à une intersections et le divise entre chaque en fonctions de leur fréquentations
 """
