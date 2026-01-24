@@ -1,23 +1,26 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
-
- def __init__(self,id : int,streets : list[Street]):
-        self.id = id
-        self.streets = streets
-        self.schedule : dict[Street,Schedule] = {}
-        #schedule par défaut
-        for street in streets:
-            self.schedule[street] = Schedule()
-
-
+Module d'exportation des solutions.
 """
 from polystructure import Intersection
 from polyparser import parse_challenge
 
 
 def export_file(intersections : list[Intersection],challenge : str,outputFile : str) :
+    """
+    Exporte le schedule des intersections dans un fichier texte.
+
+    Entrées :
+    - intersections : Liste des intersections d'une simulation
+    - challenge : Nom du challenge
+    - outputFile : Nom du fichier de sortie (ex : test)
+    """
     f = open("./solutions/"+challenge+"/"+outputFile+".txt", "w")
     f.write(f"{len(intersections)}\n")
 
+    # Ajoute le planning de chaque intersection au fichier
     for intersection in intersections:
         f.write(f"{intersection.getId()}\n")
         f.write(f"{len(intersection.getStreets())}\n")

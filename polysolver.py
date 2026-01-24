@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Module de résolution du projet Poly#.
+"""
+Module de résolution du projet Poly#.
 """
 from enum import Enum
 from solvers.empty import EmptySolver
@@ -11,6 +12,7 @@ from solvers.unused import UnusedStreetSolver
 from solvers.intersectionsolver import IntersectionSolver
 from solvers.advanced import AdvancedSolver
 
+# Enum contenant toutes nos solutions
 class AvailableSolutions(Enum):
     EMPTY : Solver = EmptySolver
     UNUSED : Solver = UnusedStreetSolver

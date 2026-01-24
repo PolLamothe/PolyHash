@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Module contenant les data stuctures utilisé durant le projet
+"""
+Module contenant les data stuctures utilisé durant le projet.
 """
 
 from __future__ import annotations
@@ -37,8 +38,10 @@ class Street:
 class Schedule:
     time : int = 1
 
+"""
+Objet contenant toutes les données d'une intersection.
+"""
 class Intersection:
-    
     def __init__(self,id : int):
         self.__id = int(id)
         self.__streets : list[Street] = []
@@ -48,6 +51,13 @@ class Intersection:
         self.__schedule_map : dict[str, Schedule] = {}
 
     def addStreet(self,street : Street,schedule : Schedule = Schedule()):
+        """
+        Ajoute une rue à l'intersection.
+
+        Entrées :
+        - street : La rue en question
+        - schedule : Le planning de la rue
+        """
         if not isinstance(street,Street):
             raise Exception(street," is not a Street")
         
@@ -70,6 +80,13 @@ class Intersection:
         return self.__schedule_map.get(street.name)
     
     def updateSchedule(self, street: Street, schedule: Schedule):
+        """
+        Met à jour le planning d'une rue.
+
+        Entrées :
+        - street : La rue
+        - schedule : Le nouvea planning modifié de la rue
+        """
         if street.name not in self.__schedule_map:
              raise Exception("Cette intersection n'est pas liée à cette rue")
         
@@ -81,6 +98,13 @@ class Intersection:
                 return
         
     def addSchedule(self,street : Street,schedule : Schedule):
+        """
+        Ajoute un planning à une rue.
+
+        Entrées :
+        - street : La rue
+        - schedule : Le nouveau planning de la rue
+        """
         if street.name not in self.__schedule_map:
             self.__schedule.append((street,schedule))
             self.__schedule_map[street.name] = schedule
@@ -88,6 +112,12 @@ class Intersection:
             raise Exception("Cette intersection possède déja un schedule pour cette rue")
     
     def deleteSchedule(self,street : Street):
+        """
+        Supprime le planning d'une rue.
+
+        Entrées :
+        - street : la rue
+        """
         if street.name in self.__schedule_map:
             del self.__schedule_map[street.name]
             for index,value in enumerate(self.__schedule):
@@ -98,6 +128,13 @@ class Intersection:
             raise Exception("Cette intersection n'est pas liée à cette rue")
     
     def changeOrder(self,streetToReplace : Street,streetToPlace : Street):
+        """
+        Déplace la position d'une rue dans le planning
+
+        Entrées :
+        - streetToReplace : La rue à remplacer
+        - streetToPmace : La rue à laquel placer
+        """
         indexToReplace = None
         indexToPlace = None
         for index,value in enumerate(self.__streets):
@@ -124,6 +161,9 @@ class Intersection:
         return f'Intersection ID : {self.__id} | rues : {self.__streets} | schedules : {self.__schedule}'
     
     def removeEmptySchedule(self):
+        """
+        Supprime les planning ayant un temps d'allumage de 0.
+        """
         newSchedule = []
         self.__schedule_map.clear()
         
@@ -145,6 +185,9 @@ class Intersection:
     def __hash__(self):
         return hash(str(self))
 
+"""
+Objet contenant toutes les données d'une voiture.
+"""
 class Car:
     carIdCount = 0
     def __init__(self,streets : list[Street]):
@@ -158,8 +201,10 @@ class Car:
     def getId(self) -> int:
         return self.__id
 
+"""
+Objet contenant toutes les données en mémoire du challenge.
+"""
 class DataManager:
-    
     def __init__(self):
         self.__streets : list[Street] = []
         self.__streets_map : dict[str, Street] = {}
@@ -167,7 +212,16 @@ class DataManager:
         self.__intersections : dict[int,Intersection] = {}
         self.__cars : list[Car] = []
     
-    def addstreet(self,street : RawStreet) -> Street:
+    def addStreet(self,street : RawStreet) -> Street:
+        """
+        Ajoute une rue.
+
+        Entrées :
+        - street : La rue à ajouter
+
+        Sortie :
+        La rue parsée
+        """
         if not isinstance(street,RawStreet):
             raise Exception(street," is not a RawStreet")
         
@@ -194,6 +248,15 @@ class DataManager:
         return newstreet
     
     def addCar(self,car : RawCar) -> Car:
+        """
+        Ajoute une voiture.
+
+        Entrées :
+        - car : La voiture à ajouter
+
+        Sortie :
+        La voiturz parsée
+        """
         if not isinstance(car,RawCar):
             raise Exception(car," is not a RawCar")
 
@@ -209,6 +272,9 @@ class DataManager:
         return self.__cars[-1]
     
     def removeUnused(self):
+        """
+        Supprime toutes les intersections n'ayant aucune rue rattachée à celle-ci.
+        """
         deleteId = []
         for id in self.__intersections:
             if len(self.__intersections[id].getStreets()) == 0:
@@ -227,6 +293,9 @@ class DataManager:
         return self.__intersections
     
     def removeEmptySchedule(self):
+        """
+        Supprime les planning ayant un temps d'allumage de 0.
+        """
         for intersection in self.__intersections.values():
             intersection.removeEmptySchedule()
 
@@ -252,7 +321,7 @@ class Challenge:
         self.__dataManager = DataManager()
 
         for street in streets:
-            self.__dataManager.addstreet(street)
+            self.__dataManager.addStreet(street)
 
         for car in car:
             self.__dataManager.addCar(car)

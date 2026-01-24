@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Module principal pour la mise en oeuvre du projet Poly#.
+"""
+Module principal pour la mise en oeuvre du projet Poly#.
 """
 
-# Vous pouvez structurer votre code en modules pour améliorer la
-# compréhension et faciliter le travail collaboratif
 from polyparser import parse_challenge
 from polystructure import Challenge,Solver
 from polysolver import AvailableSolutions
@@ -15,41 +14,38 @@ import csv
 import time
 
 if __name__ == "__main__":
-    # La syntaxe exigée pour appeler le programme est
-    # polyhash.py chemin/fichier_entree.txt chemin/fichier_sortie.txt
-
-    # On fournit ici un exemple permettant de passer en paramètre le
-    # fichier du challenge et le fichier de sortie. N'hésitez pas si
-    # besoin à compléter avec d'autres paramètres/options - en
-    # conservant la possibilité de l'appel ci-dessus - en consultant
-    # la documentation du module argparse:
-    # https://docs.python.org/3/library/argparse.html
-
     import argparse
     parser = argparse.ArgumentParser(description='Solve Poly# challenge.')
     parser.add_argument('challenge', type=str,
                         help='challenge definition filename',
-                        metavar="challenge.txt")
+                        metavar="challenge")
     parser.add_argument('solution', type=str, default="empty",
                         help='solution program')
     parser.add_argument('-o', '--output', type=str, default=None,
                         help='output filename',
-                        metavar="sortie.txt")
+                        metavar="sortie")
     parser.add_argument('-v',help='verbose mode',action="store_true")
     parser.add_argument('-d',help='diagnose mode',action="store_true")
 
+    # Récupère les arguments
     args = parser.parse_args()
 
+    # Utilise la solution demandée pour résoudre le challenge
     challenge = parse_challenge(args.challenge)
     solver = AvailableSolutions.getFromName(args.solution)()
     challenge.setSolver(solver)
     solution = challenge.solve()
     challenge.removeEmptySchedule()
     challenge.removeUnused()
+
     if args.output is not None:
         # Sauvegarder le fichier généré
         export_file(solution,args.challenge.split("/")[-1].split(".")[0],args.output)
+
+    # Calcule le score de la solution
     scorerResult = scorer(challenge,solution,args.v,args.d)
+
+    # Génère un diagnostique si demandé
     if args.d:
         print("Generating diagnose")
         diagnose = exportCSV(scorerResult)
@@ -57,4 +53,5 @@ if __name__ == "__main__":
             writer = csv.writer(f)
             writer.writerows(diagnose)
         print("Diagnose exported")
+
     print(f"Score: {scorerResult.score}")
