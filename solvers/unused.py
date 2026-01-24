@@ -4,18 +4,18 @@
 """solveur trop meilleur que les autres
 """
 
-from polystructure import Challenge, Solver, Intersection,Schedule
+from polystructure import Challenge, Solver, Intersection, Schedule
 import copy
 
 class UnusedStreetSolver(Solver):
-    def solve(self,challenge : Challenge)->list[Intersection]:
+    def solve(self, challenge: Challenge) -> list[Intersection]:
         intersections = challenge.getDataManager().getIntersections()
 
         usedStreets = []
         startingStreets = []
 
         for car in challenge.getDataManager().getCars():
-            for index,street in enumerate(car.getStreets()[:-1]):
+            for index, street in enumerate(car.getStreets()[:-1]):
                 if index == 0:
                     startingStreets.append(street.name)
                 usedStreets.append(street.name)
@@ -24,13 +24,13 @@ class UnusedStreetSolver(Solver):
             streets = copy.copy(i.getStreets())
             for s in streets:
                 if s.name in usedStreets:
-                    i.updateSchedule(s,Schedule(1))
+                    i.updateSchedule(s, Schedule(1))
                 else:
-                    i.updateSchedule(s,Schedule(0))
+                    i.updateSchedule(s, Schedule(0))
 
         for i in intersections.values():
-            for index,street in enumerate(i.getStreets()):
+            for index, street in enumerate(i.getStreets()):
                 if street.name in startingStreets:
-                    i.changeOrder(i.getStreets()[0],street)
+                    i.changeOrder(i.getStreets()[0], street)
 
         return [intersection for intersection in intersections.values()]

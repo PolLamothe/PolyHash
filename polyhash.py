@@ -6,9 +6,9 @@ Module principal pour la mise en oeuvre du projet Poly#.
 """
 
 from polyparser import parse_challenge
-from polystructure import Challenge,Solver
+from polystructure import Challenge, Solver
 from polysolver import AvailableSolutions
-from polyscorer import scorer,exportCSV
+from polyscorer import scorer, exportCSV
 from polyexport import export_file
 import csv
 import time
@@ -40,16 +40,16 @@ if __name__ == "__main__":
 
     if args.output is not None:
         # Sauvegarder le fichier généré
-        export_file(solution,args.challenge.split("/")[-1].split(".")[0],args.output)
+        export_file(solution, args.challenge.split("/")[-1].split(".")[0], args.output)
 
     # Calcule le score de la solution
-    scorerResult = scorer(challenge,solution,args.v,args.d)
+    scorerResult = scorer(challenge, solution, args.v, args.d)
 
     # Génère un diagnostique si demandé
     if args.d:
         print("Generating diagnose")
         diagnose = exportCSV(scorerResult)
-        with open("./diagnose/"+str(int(time.time()))+".csv", "w", newline="") as f:
+        with open("./diagnose/" + str(int(time.time())) + ".csv", "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(diagnose)
         print("Diagnose exported")

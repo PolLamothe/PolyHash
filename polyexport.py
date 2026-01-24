@@ -8,7 +8,7 @@ from polystructure import Intersection
 from polyparser import parse_challenge
 
 
-def export_file(intersections : list[Intersection],challenge : str,outputFile : str) :
+def export_file(intersections: list[Intersection], challenge: str, outputFile: str) -> None:
     """
     Exporte le schedule des intersections dans un fichier texte.
 
@@ -17,7 +17,7 @@ def export_file(intersections : list[Intersection],challenge : str,outputFile : 
     - challenge : Nom du challenge
     - outputFile : Nom du fichier de sortie (ex : test)
     """
-    f = open("./solutions/"+challenge+"/"+outputFile+".txt", "w")
+    f = open("./solutions/" + challenge + "/" + outputFile + ".txt", "w")
     f.write(f"{len(intersections)}\n")
 
     # Ajoute le planning de chaque intersection au fichier

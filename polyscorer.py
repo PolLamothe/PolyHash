@@ -7,7 +7,7 @@ Module calculant le score d'une solution à un challenge.
 
 from __future__ import annotations
 from collections import deque
-from polystructure import Challenge, Car, Street, Intersection, ScorerResult, ScorerIntersectionStreet, ScorerIntersection, ScorerIntersectionStreetHistory,ScorerCar
+from polystructure import Challenge, Car, Street, Intersection, ScorerResult, ScorerIntersectionStreet, ScorerIntersection, ScorerIntersectionStreetHistory, ScorerCar
 from polyparser import parse_challenge
 
 """
@@ -34,7 +34,7 @@ class IntersectionSolver:
         self.streets = []
         if dataManager.verbose: print(f" I{intersection.getId()} instanciée")
 
-    def initStreets(self):
+    def initStreets(self) -> None:
         """
         Initialise la liste des rues de l'intersection à partir du planning de l'intersection.
         """
@@ -43,7 +43,7 @@ class IntersectionSolver:
             if st_solver:
                 self.streets.append(st_solver)
 
-    def decrementTimeLeft(self):
+    def decrementTimeLeft(self) -> None:
         """
         Fait passer un tour à l'intersection.
         """
@@ -64,7 +64,7 @@ class IntersectionSolver:
         """
         return self.streets[self.currentTurn]
     
-    def isLightGreenForStreet(self, street: StreetSolver):
+    def isLightGreenForStreet(self, street: StreetSolver) -> bool:
         """
         Retourne vrai si la rue en paramètre a le feu vert, faux sinon.
 
@@ -77,10 +77,10 @@ class IntersectionSolver:
         green_street = self.getGreenStreet()
         return green_street is street
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"(IntersectionSolver I{self.intersection.getId()})"
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
 """
@@ -100,7 +100,7 @@ class StreetSolver:
         self.intersectionAtEnd = dataManager.getIntersectionFromId(street.destination.getId())
         if dataManager.verbose: print(f" R{street.name} instanciée")
     
-    def isLightGreen(self):
+    def isLightGreen(self) -> bool:
         """
         Retourne vrai si la rue a le feu vert, faux sinon.
 
@@ -109,7 +109,7 @@ class StreetSolver:
         """
         return self.intersectionAtEnd.isLightGreenForStreet(self)
     
-    def pushWaitingCar(self, car: CarSolver):
+    def pushWaitingCar(self, car: CarSolver) -> None:
         """
         Ajoute une voiture à la file de voiture attendant au feu.
 
@@ -129,10 +129,10 @@ class StreetSolver:
             return None
         return self.carsWaitingAtLight.popleft()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"(StreetSolver R{self.street.name})"
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
 """
@@ -166,7 +166,7 @@ class CarSolver:
         self.currentStreet.pushWaitingCar(self)
         if dataManager.verbose: print(f" V{car.getId()} instanciée")
     
-    def changeStreet(self):
+    def changeStreet(self) -> None:
         """
         Passe à la rue suivante  dans l'itinéraire.
         """
@@ -207,10 +207,10 @@ class CarSolver:
         
         return False
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"(CarSolver V{self.car.getId()})"
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
 """
@@ -230,7 +230,7 @@ class DataManagerSolver:
     
     verbose: bool
 
-    def __init__(self, challenge: Challenge, intersections : list[Intersection], verbose: bool = False):
+    def __init__(self, challenge: Challenge, intersections: list[Intersection], verbose: bool = False):
         self.t = 1
         self.score = 0
         self.challenge = challenge
@@ -251,7 +251,7 @@ class DataManagerSolver:
         for car in challenge.getDataManager().getCars():
             self.addCar(car)
 
-    def addCar(self, car: Car):
+    def addCar(self, car: Car) -> None:
         """
         Ajoute une voiture à la simulation.
 
@@ -262,7 +262,7 @@ class DataManagerSolver:
         self.cars.append(c)
         self.activeCars.append(c)
     
-    def addStreet(self, street: Street):
+    def addStreet(self, street: Street) -> None:
         """
         Ajoute une rue à la simulation.
 
@@ -273,7 +273,7 @@ class DataManagerSolver:
         self.streets.append(s)
         self._streets_map[street.name] = s
 
-    def addIntersection(self, intersection: Intersection):
+    def addIntersection(self, intersection: Intersection) -> None:
         """
         Ajoute une intersection à la simulation.
 
@@ -290,13 +290,13 @@ class DataManagerSolver:
     def getIntersectionFromId(self, id: int) -> IntersectionSolver | None:
         return self._intersections_map.get(id)
     
-    def addScore(self):
+    def addScore(self) -> None:
         """
         Ajoute au score le nombre de points correspondant au tour actuel.
         """
         self.score += self.challenge.getPointForFinishing() + (self.challenge.getDuration() - (self.t))
 
-def tour(dataManager: DataManagerSolver, t: int, diagnose_links: list[tuple[StreetSolver, ScorerIntersectionStreet]]):
+def tour(dataManager: DataManagerSolver, t: int, diagnose_links: list[tuple[StreetSolver, ScorerIntersectionStreet]]) -> None:
     """
     Exécute un tour de la simulation.
 
@@ -338,7 +338,7 @@ def tour(dataManager: DataManagerSolver, t: int, diagnose_links: list[tuple[Stre
                 car.changeStreet()
         intersection.decrementTimeLeft()
 
-def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bool = False, diagnose: bool = False) -> ScorerResult:
+def scorer(challenge: Challenge, intersections: list[Intersection], verbose: bool = False, diagnose: bool = False) -> ScorerResult:
     """
     Calcule les résultats de la simulation.
 
@@ -383,13 +383,13 @@ def scorer(challenge: Challenge, intersections : list[Intersection], verbose: bo
         tour(dataManager, i, diagnose_links)
 
     for car in dataManager.cars:
-        scorerCars[car.car] = ScorerCar(car.isArrived,car.car)
+        scorerCars[car.car] = ScorerCar(car.isArrived, car.car)
         
     if dataManager.verbose:
         print("== Fin de la simulation ==")
         print(f"Le score final est de {dataManager.score}.")
         
-    return ScorerResult(dataManager.score, scorerIntersections,scorerCars)
+    return ScorerResult(dataManager.score, scorerIntersections, scorerCars)
 
 def exportCSV(scorerResult : ScorerResult) -> list:
     """
@@ -401,11 +401,11 @@ def exportCSV(scorerResult : ScorerResult) -> list:
     Sortie :
     CSV contenant toutes les informations (sous forme de matrice)
     """
-    result = [["IntersectionId","StreetName","Time","GreenState","WaitingCars"]]
+    result = [["IntersectionId", "StreetName", "Time", "GreenState", "WaitingCars"]]
     for intersection in scorerResult.intersections:
         for street in intersection.streets:
             for data in street.history:
-                result.append([intersection.intersection.getId(),street.street.name,data.time,data.greenState,data.waitingCars])
+                result.append([intersection.intersection.getId(), street.street.name, data.time, data.greenState, data.waitingCars])
     return result
 
 if __name__ == "__main__":

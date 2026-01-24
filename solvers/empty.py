@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""solver vide pour tester la structure
+"""
+solver vide pour tester la structure
 """
 
 from polystructure import Challenge, Solver, Intersection
 
 class EmptySolver(Solver):
-    def solve(self,challenge : Challenge)->list[Intersection]:
+    def solve(self, challenge: Challenge) -> list[Intersection]:
         intersections = challenge.getDataManager().getIntersections()
         return [intersection for intersection in intersections.values()]

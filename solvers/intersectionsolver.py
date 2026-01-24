@@ -1,5 +1,5 @@
 """
-    Solveur qui attribut un budget de 10 seconde à une intersections et le divise entre chaque en fonctions de leur fréquentations
+Solveur qui attribut un budget de 10 seconde à une intersections et le divise entre chaque en fonctions de leur fréquentations
 """
 
 

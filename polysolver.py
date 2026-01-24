@@ -24,4 +24,4 @@ class AvailableSolutions(Enum):
         for solution in AvailableSolutions:
             if solution.name.lower() == name.lower():
                 return solution.value
-        raise ValueError("Solution "+name+" not found")
+        raise ValueError("Solution " + name + " not found")
