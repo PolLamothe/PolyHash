@@ -71,20 +71,45 @@ Nous développons un algorithme se basant sur la densité du trafic pour produir
 Fonctionnement du projet
 ========================
 
-(Description du fonctionnement du projet, notamment comment le lancer (paramètres, etc).)
+### Procédure d'installation
 
+1. **Cloner le projet** :
+````
+git clone https://gitlab.univ-nantes.fr/E239555L/polyhash-2025.git
+````
+
+2. **Installer les dépendances** :
+````
+pip install -r requirements.txt
+````
+
+### Procédure d'exécution
 La syntaxe générale/minimale est
+````
+polyhash.py ./challenges/challenge.in ./output/sortie.tx
+````
 
-    polyhash.py ./challenges/challenge.in ./output/sortie.txt
-
-L'équipe
+L'équipe et la répartition des taches :
 ========
 
 À compléter par **chaque personne**: 1 ligne par personne, indiquant le nom et l'adresse mail de la personne, et chacun pousse ses informations.
 
 L'objectif de cette manipulation est de provoquer des conflits d'édition, qui surviennent quand un même fichier est modifié au même endroit par plusieurs personnes, et de voir comment on les résout.
 
-- LAMOTHE Pol - pol.lamothe--trebaol@etu.univ-nantes.fr
-- Killian Guérin - killian.guerin1@etu.univ-nantes.fr
-- Yves Maël Tchouassi - yves-mael.tchouassi@etu.univ-nantes.fr
-- ARNAUD Kyllian - kyllian.arnaud@etu.univ-nantes.fr
+**LAMOTHE Pol** - pol.lamothe--trebaol@etu.univ-nantes.fr
+
+>taches : implémentation de la structure de données ([Polystructure](/polystructure.py)) et implémentation des stratégies [Unused](/solvers/unused.py) et [Advanced](/solvers/advanced.py)
+
+
+**GUÉRIN Killian** - killian.guerin1@etu.univ-nantes.fr
+
+>taches : implémentation du Scorer ([Polyscorer](/polyscorer.py)) et gestions des tickets
+
+
+**TCHOUASSI Yves Maël** - yves-mael.tchouassi@etu.univ-nantes.fr
+
+>taches : implémentation du Parser ([Polyparser](/polyparser.py)) et implémentation de la stratégie [MostUsed](/solvers/mostused.py)
+
+**ARNAUD Kyllian** - kyllian.arnaud@etu.univ-nantes.fr
+
+>taches : implémentation de l'Export ([Polyexport](/polyexport.py)), implémentation de la stratégie [IntersectionSolver](/solvers/intersectionsolver.py) et rédaction du README.
