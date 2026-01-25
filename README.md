@@ -1,115 +1,114 @@
-Projet Poly#
-============
+# Projet Poly# - Google Hash Code 2021
 
-### Description du projet
+## Description du projet
+Ce projet implémente une solution au problème "Traffic Signaling" du concours Google Hash Code 2021. L’objectif est de simuler la circulation dans une ville modélisée par des intersections, des rues à sens unique et des voitures, afin d'optimiser les plans de feux tricolores (schedules). Le but est de réduire les temps d’attente et de maximiser le score global en faisant arriver le maximum de voitures à destination dans le temps imparti.
 
------
-Ce projet implémente une solution au problème Traffic Signaling du concours Google Hash Code 2021.
+Le programme lit un fichier d’entrée, applique une stratégie algorithmique pour générer un planning de feux, simule le trafic pour évaluer le score via un module dédié, et produit un fichier de sortie conforme au format attendu.
 
-L’objectif est de simuler la circulation dans une ville modélisée par des intersections, rues à sens unique et voitures, puis d’optimiser les schedules de feux tricolores afin de réduire les temps d’attente et maximiser le score obtenu.
-
-La ville est décrite par un ensemble de rues (avec durée de traversée), d’intersections et de trajets prédéfinis pour chaque voiture.
-
-Notre programme lit un fichier d’entrée, calcule un planning de feux optimal selon notre stratégie, puis génère un fichier de sortie conforme au format attendu.
-
-
-
-### Notre Missions
-
----
-Notre mission dans ce projet se compose de plusieurs étapes :
-1. Lire et interpréter les fichiers d’entrée
-   - Durée de simulation
-   - Liste des intersections
-   - Liste des rues (nom, début, fin, durée)
-   - Chemin que chaque voiture doit parcourir 
-   
-
-2. Analyser le trafic
-    - Compter combien de voitures passent par chaque rue
-    - Identifier les intersections critiques / très fréquentées
-    - Calculer la charge potentielle sur les feux
-
-
-3. Générer un planning de feux (traffic light schedule)
-    
-    Pour chaque intersection :
-    - Choisir quelles rues auront un feu vert (certaines rues peuvent rester toujours rouges)
-    - Définir un ordre de passage
-    - Déterminer une durée de feu vert adaptée au trafic 
-
-
-4. Optimiser pour maximiser le score
-    
-    Un véhicule rapporte :
-    - F points s’il termine à temps
-    - D - T points supplémentaires, où T est le temps d’arrivée
-
-    L’objectif est donc :
-    - Faire passer un maximum de voitures à temps
-    - Minimiser leur attente aux intersections 
-
-
-5. Générer le fichier de sortie
-
-    Selon le format requis :
-    - Nombre d’intersections configurées
-   
-    - Pour chacune :
-      - ID de l’intersection
-      - Nombre de rues gérées
-      - Les paires (rue, durée du feu vert)
-
-   
-### Résumé
-
----
-En bref, ce projet vise à optimiser l’écoulement du trafic dans une simulation afin d’obtenir le meilleur score possible.
-Nous développons un algorithme se basant sur la densité du trafic pour produire un schedule intelligent et efficace, tout en respectant les contraintes du problème Hash Code.
-
-
-Fonctionnement du projet
-========================
-
-### Procédure d'installation
-
-1. **Cloner le projet** :
-````
-git clone https://gitlab.univ-nantes.fr/E239555L/polyhash-2025.git
-````
-
-2. **Installer les dépendances** :
-````
-pip install -r requirements.txt
-````
-
-### Procédure d'exécution
-La syntaxe générale/minimale est
-````
-polyhash.py ./challenges/challenge.in ./output/sortie.tx
-````
-
-L'équipe et la répartition des taches :
-========
-
-À compléter par **chaque personne**: 1 ligne par personne, indiquant le nom et l'adresse mail de la personne, et chacun pousse ses informations.
-
-L'objectif de cette manipulation est de provoquer des conflits d'édition, qui surviennent quand un même fichier est modifié au même endroit par plusieurs personnes, et de voir comment on les résout.
+## Équipe et Répartition des tâches
 
 **LAMOTHE Pol** - pol.lamothe--trebaol@etu.univ-nantes.fr
-
->taches : implémentation de la structure de données ([Polystructure](/polystructure.py)) et implémentation des stratégies [Unused](/solvers/unused.py) et [Advanced](/solvers/advanced.py)
-
+> **Tâches :** Architecture des données (`Polystructure`), implémentation de la stratégie avancée (`AdvancedSolver`) et stratégie de nettoyage (`Unused`).
 
 **GUÉRIN Killian** - killian.guerin1@etu.univ-nantes.fr
-
->taches : implémentation du Scorer ([Polyscorer](/polyscorer.py)) et gestions des tickets
-
+> **Tâches :** Implémentation du moteur de simulation et de scoring (`Polyscorer`) et gestion des tickets.
 
 **TCHOUASSI Yves Maël** - yves-mael.tchouassi@etu.univ-nantes.fr
-
->taches : implémentation du Parser ([Polyparser](/polyparser.py)) et implémentation de la stratégie [MostUsed](/solvers/mostused.py)
+> **Tâches :** Lecture et parsing des fichiers d'entrée (`Polyparser`) et implémentation de l'heuristique statistique (`MostUsed`).
 
 **ARNAUD Kyllian** - kyllian.arnaud@etu.univ-nantes.fr
+> **Tâches :** Génération des fichiers de sortie (`Polyexport`), implémentation de l'heuristique équilibrée (`IntersectionSolver`) et rédaction de la documentation.
 
->taches : implémentation de l'Export ([Polyexport](/polyexport.py)), implémentation de la stratégie [IntersectionSolver](/solvers/intersectionsolver.py) et rédaction du README.
+## Procédure d'installation
+
+Le projet nécessite **Python 3**.
+
+1. **Cloner le dépôt** :
+```bash
+git clone https://gitlab.univ-nantes.fr/E239555L/polyhash-2025.git
+```
+
+2. **Installer les dépendances** :
+Le projet utilise `ruff` pour le linting.
+```bash
+pip install -r requirements.txt
+```
+
+
+
+## Procédure d'exécution
+
+Le point d'entrée du programme est le script `polyhash.py`.
+
+### Syntaxe de base
+
+```bash
+python3 polyhash.py [fichier_challenge] [nom_stratégie] -o [fichier_sortie]
+```
+
+### Arguments
+
+* `challenge` : Le nom du fichier d'entrée (sans l'extension `.in`, ex: `a_example`).
+* `solution` : La stratégie à utiliser (par défaut `empty`). Valeurs disponibles :
+* `mostused`
+* `intersectionsolver`
+* `advanced`
+* `unused`
+* `empty`
+
+
+* `-o`, `--output` : Chemin du fichier de sortie (ex: `a` -> solutions/CHALLENGE/a.txt).
+* `-v` : Mode verbeux.
+* `-d` : Mode diagnostic (génère un fichier CSV d'analyse dans le dossier `diagnose/`).
+
+### Exemple
+
+Pour exécuter la stratégie avancée sur le challenge "a_example" et sauvegarder le résultat :
+
+```bash
+python3 polyhash.py a_example advanced -o a
+```
+
+## Détail des stratégies mises en œuvre
+
+### 1. Stratégie `MostUsed` (Heuristique simple)
+
+* **Principe :** Cette stratégie compte le nombre de passages de voitures dans chaque rue. Le temps de feu vert attribué est calculé proportionnellement à la fréquentation de la rue (fréquence divisée par 6, avec un minimum de 1 seconde).
+* **Performances :** Très rapide (complexité linéaire par rapport au nombre de voitures), peu gourmande en mémoire.
+
+### 2. Stratégie `IntersectionSolver` (Heuristique par budget)
+
+* **Principe :** Chaque intersection dispose d'un "budget" de temps fixe (10 secondes). Ce temps est réparti entre les rues entrantes au prorata du trafic global observé sur chacune d'elles.
+* **Performances :** Exécution rapide. Permet d'équilibrer le trafic mieux que `MostUsed` sur des intersections complexes.
+
+### 3. Stratégie `Advanced` (Algorithme itératif)
+
+C'est notre stratégie la plus performante. Elle fonctionne par itérations successives :
+
+1. **Filtrage initial :** Élimination des voitures qui n'ont mathématiquement pas le temps d'arriver à destination.
+2. **Initialisation :** Attribution d'un temps de 1 seconde à toutes les rues utilisées.
+3. **Optimisation des conflits :** Analyse des bouchons via une simulation intermédiaire (`scorer`). Si une rue verte est vide alors qu'une rue rouge est bouchée, l'ordre de passage est modifié.
+4. **Gestion de la densité :** Augmentation itérative du temps de feu vert pour les rues où s'accumulent le plus de voitures.
+5. **Nettoyage final :** Les voitures n'ayant toujours pas fini leur trajet après optimisation sont retirées du calcul pour libérer les rues.
+
+* **Performances :** Temps d'exécution plus long car elle nécessite plusieurs appels au simulateur (`scorer`) pour ajuster les paramètres, mais offre les meilleurs scores.
+
+## Organisation du code
+
+Le projet est structuré en modules pour séparer les responsabilités :
+
+* **`polyhash.py`** : Programme principal. Gère les arguments en ligne de commande et orchestre les étapes (parsing -> solving -> scoring -> export).
+* **`polystructure.py`** : Contient les classes de données (`Challenge`, `Intersection`, `Street`, `Car`, `Schedule`). C'est le cœur du modèle objet.
+* **`polyparser.py`** : Chargé de lire les fichiers `.in` et de créer les objets du `DataManager`.
+* **`polyexport.py`** : Génère le fichier de sortie conforme au format attendu par Hash Code.
+* **`polyscorer.py`** : Simule le déroulement du trafic seconde par seconde pour calculer le score et fournir des métriques utilisées par la stratégie `Advanced`.
+* **`solvers/`** : Package contenant les différentes stratégies (`advanced.py`, `mostused.py`, `intersectionsolver.py`, `unused.py`).
+
+## Bugs et limitations connus
+
+* **Limitations de l'approche `Advanced` :** L'optimisation est locale et itérative. Elle peut tomber dans des optimums locaux. De plus, la simulation complète (`scorer`) à chaque itération peut être coûteuse en temps pour les très gros fichiers.
+* **Gestion de la mémoire :** Pour les très gros challenges, la création d'objets pour chaque rue et voiture peut consommer une quantité importante de RAM.
+
+## Autres fonctionnalitées :
+
+**Diagnostic :** L'option `-d` exporte un fichier CSV avec l'état détaillé des intersections, utile pour le débogage.
